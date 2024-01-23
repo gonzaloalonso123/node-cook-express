@@ -1,0 +1,18 @@
+.menu-link:hover > i *,
+.menu-link:hover {
+  @apply bg-nc-dark-orange text-white font-bold;
+}
+
+
+.project-menu-link:hover > i *,
+.project-menu-link:hover {
+  @apply bg-nc-red text-white;
+}
+
+.project-menu-link.active {
+    @apply bg-nc-red text-white;
+}
+
+.project-menu-link, .project-menu-link > i * {
+    @apply disabled:text-gray-400  disabled:cursor-not-allowed;
+}
