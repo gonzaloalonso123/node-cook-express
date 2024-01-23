@@ -99,7 +99,7 @@ const ProjectInfoStatus = ({ label, value }) => {
       <div
         className={`rounded-full ${
           value === "on" ? "bg-nc-green" : "bg-nc-red"
-        } h-6 w-6 border border-black`}
+        } h-5 w-5 border border-black`}
       />
     </div>
   );

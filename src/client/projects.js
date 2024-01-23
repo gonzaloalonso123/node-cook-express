@@ -56,7 +56,7 @@ const mockProject = {
   name: "Fire project",
   description: "This is the first project",
   owner: "1",
-  status: "on",
+  status: "off",
   created: "2021-06-01",
   updated: "2021-06-01",
   collections: 10,

@@ -51,7 +51,7 @@ const SideNav = () => {
 
 const ExpandController = ({ expanded, toggleExpanded }) => (
   <div
-    className="flex items-center justify-end text-black font-bold cursor-pointer"
+    className="flex items-center justify-end text-black font-bold cursor-pointer select-none"
     onClick={toggleExpanded}
   >
     <Icon
@@ -66,7 +66,7 @@ const ExpandController = ({ expanded, toggleExpanded }) => (
 
 const NavItem = ({ item, expanded }) => (
   <Link
-    className={`p-2 font-regular text-gray-800 menu-link flex gap-5 ${
+    className={`p-2 font-regular text-gray-800 menu-link flex gap-3 ${
       !expanded ? "justify-center" : ""
     } duration-100`}
     to={item.path}
