@@ -1,6 +1,7 @@
 import { ColorIcon, Icon } from "./icons/Icon";
 
-const inputStyle = "border-2 border-nc-orange rounded-md p-2";
+const inputStyle =
+  "border-2 border-nc-orange rounded-md p-2 disabled:border-transparent";
 const buttonStyle =
   "rounded-md px-2 hover:bg-nc-orange transition-all translate-y-0.5 px-4 border-2";
 const checkboxStyle = "border-2 border-nc-orange rounded-md p-2";
@@ -69,4 +70,24 @@ export const Modal = ({
       {children}
     </div>
   );
+};
+
+export const WindowContainer = ({ children }) => {
+  return (
+    <div className="flex flex-col gap-4 w-full rounded-md border shadow-md p-4 bg-white">
+      {children}
+    </div>
+  );
+};
+
+const Loading = () => {
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-nc-dark-orange" />
+    </div>
+  );
+};
+
+export const LoadingOrChildren = ({ loading, children }) => {
+  return loading ? <Loading /> : children;
 };

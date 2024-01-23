@@ -1,6 +1,7 @@
 import React from "react";
 import { ColorIcon } from "../components/icons/Icon";
 import { useScroll } from "../hooks/useScroll";
+import { useNavBarContext } from "../context/NavBarContext";
 
 export const Container = ({
   children,
@@ -10,8 +11,13 @@ export const Container = ({
   headerType,
   headerChildren,
 }) => {
+  const { expanded } = useNavBarContext();
   return (
-    <div className="min-h-screen w-5/6 border pt-10">
+    <div
+      className={`min-h-screen ${
+        expanded ? "w-[85%]" : "w-[95%]"
+      } border pt-10 bg-gray-100  transition-all duration-100`}
+    >
       <Header
         title={title}
         subtitle={subtitle}
