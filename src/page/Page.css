@@ -6,11 +6,11 @@
 
 .project-menu-link:hover > i *,
 .project-menu-link:hover {
-  @apply bg-nc-red text-white;
+  @apply text-gray-600;
 }
 
 .project-menu-link.active {
-    @apply bg-nc-red text-white;
+    @apply bg-nc-blue text-white;
 }
 
 .project-menu-link, .project-menu-link > i * {

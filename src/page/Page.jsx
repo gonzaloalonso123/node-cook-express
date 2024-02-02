@@ -1,22 +1,24 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { Header } from "../components/Header";
 import { Link } from "react-router-dom";
 import { Icon } from "../components/icons/Icon";
 import "./Page.css";
-import {
-  NavBarContextProvider,
-  useNavBarContext,
-} from "../context/NavBarContext";
+import { ScrollProvider } from "../hooks/scrollContext";
 
 export const Page = ({ children }) => {
+  const ref = useRef(null);
   return (
-    <NavBarContextProvider>
-      <div className="w-screen flex">
+    <div className="flex w-screen h-screen">
+      <SideNav />
+      <div className="w-full h-full flex flex-col">
         <Header />
-        <SideNav />
-        <div className="w-full flex justify-end pt-12">{children}</div>
+        <ScrollProvider targetRef={ref}>
+          <div className="overflow-auto" ref={ref}>
+            {children}
+          </div>
+        </ScrollProvider>
       </div>
-    </NavBarContextProvider>
+    </div>
   );
 };
 
@@ -34,16 +36,19 @@ const menu = [
 ];
 
 const SideNav = () => {
-  const { expanded, toggleExpanded } = useNavBarContext();
+  const [expanded, setExpanded] = useState(true);
   return (
     <div
       className={`${
         expanded ? "w-[15%]" : "w-[5%]"
-      } h-screen bg-white fixed top-12 shadow-md flex flex-col z-10 border-t border-2 border-gray-200 transition-width duration-100`}
+      } bg-white shadow-md flex flex-col z-10 border-t border-2 border-gray-200 transition-width duration-100`}
     >
-      <ExpandController expanded={expanded} toggleExpanded={toggleExpanded} />
-      {menu.map((item) => (
-        <NavItem item={item} expanded={expanded} />
+      <ExpandController
+        expanded={expanded}
+        toggleExpanded={() => setExpanded(!expanded)}
+      />
+      {menu.map((item, i) => (
+        <NavItem item={item} expanded={expanded} key={i} />
       ))}
     </div>
   );

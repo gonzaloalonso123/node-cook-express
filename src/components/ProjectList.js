@@ -1,15 +1,16 @@
 import React from "react";
 import { ColorIcon, Icon } from "./icons/Icon";
 import { Link } from "react-router-dom";
+import { LoadingOrChildren } from "./Generics";
 
 export const ProjectList = ({ projects }) => {
   return (
-    <div className="grid grid-cols-3 gap-10">
-      {projects.map((project) => (
-        <ProjectCard project={project} />
-      ))}
-      <NewProjectCard />
-    </div>
+      <div className="grid grid-cols-3 gap-10">
+        {projects.map((project, i) => (
+          <ProjectCard project={project} key={i} />
+        ))}
+        <NewProjectCard />
+      </div>
   );
 };
 

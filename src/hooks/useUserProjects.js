@@ -1,21 +1,22 @@
-import { useContext, useEffect, useState } from "react";
-import { getUserProjects } from "../client/projects";
-import { AuthenticationContext } from "../providers/AuthenticationProvider";
+import { useEffect, useState } from "react";
+import { useApi } from "../client/api";
+import { useAuthentication } from "../providers/AuthenticationProvider";
 
 export const useUserProjects = () => {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const { user } = useContext(AuthenticationContext);
+  const [projects, setProjects] = useState(null);
+  const { get, loading } = useApi();
+  const { auth } = require("../firebase/index");
 
   useEffect(() => {
-    const getProjects = async () => {
-      const projects = await getUserProjects();
-      setProjects(projects);
-      setLoading(false);
-    };
-
+    if (!auth.currentUser) return;
     getProjects();
-  }, []);
+  }, [auth.currentUser]);
 
-  return { projects, loading };
+  const getProjects = async () => {
+    get("/projects").then((data) => {
+      setProjects(data.projects);
+    });
+  };
+
+  return { projects, loading, setProjects };
 };

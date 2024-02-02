@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { ColorIcon } from "../components/icons/Icon";
-import { useScroll } from "../hooks/useScroll";
-import { useNavBarContext } from "../context/NavBarContext";
+import { useScroll } from "../hooks/scrollContext";
 
 export const Container = ({
   children,
@@ -11,12 +10,9 @@ export const Container = ({
   headerType,
   headerChildren,
 }) => {
-  const { expanded } = useNavBarContext();
   return (
     <div
-      className={`min-h-screen ${
-        expanded ? "w-[85%]" : "w-[95%]"
-      } border pt-10 bg-gray-100  transition-all duration-100`}
+      className={`w-full border pt-10 bg-gray-100 transition-all duration-100 min-h-screen`}
     >
       <Header
         title={title}
@@ -25,7 +21,9 @@ export const Container = ({
         headerType={headerType}
         headerChildren={headerChildren}
       />
-      <div className="px-10 pb-10 mt-10">{children}</div>
+      <div className="px-10 pb-10 mt-10 min-h-screen overflow-auto">
+        {children}
+      </div>
     </div>
   );
 };
@@ -37,7 +35,7 @@ export const Header = ({
   headerType,
   headerChildren,
 }) => {
-  const scrollPosition = useScroll();
+  const { scrollPosition } = useScroll();
   return (
     <>
       {headerType !== "static" && (
@@ -56,7 +54,7 @@ export const Header = ({
 };
 
 export const StaticHeader = ({ title, icon, subtitle, children }) => (
-  <div className="flex flex-col p-10 fixed shadow-md top-12 bg-white w-full py-3 gap-6">
+  <div className="flex flex-col p-10 fixed shadow-md top-0 pt-14 bg-white w-full py-3 gap-6 z-10">
     <div className="flex flex-row items-end gap-6 ">
       <div className="flex gap-2 items-center">
         <ColorIcon color="FFBB64" fontSize="30px">

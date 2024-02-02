@@ -1,16 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
-import ProjectContext from "../context/ProjectContext";
 import { Button, Input, WindowContainer } from "../components/Generics";
+import { useProjectContext } from "../providers/ProjectProvider";
+import { useAuthentication } from "../providers/AuthenticationProvider";
 
 export const ProjectGeneral = () => {
-  const { project } = useContext(ProjectContext);
+  const { project } = useProjectContext();
   return (
     <div className="flex gap-6">
-      <WindowContainer>
+      <WindowContainer className="w-full">
         <h1 className="text-2xl font-bold ">General</h1>
         <EditableForm project={project} />
       </WindowContainer>
-      <WindowContainer>
+      <WindowContainer className="w-full">
         <h1 className="text-2xl font-bold">Details</h1>
         <ProjectInfo project={project} />
       </WindowContainer>
@@ -69,15 +70,17 @@ const EditableForm = ({ project }) => {
 };
 
 const ProjectInfo = ({ project }) => {
+  const { user } = useAuthentication();
   return (
     <div className="flex flex-col gap-4">
       <ProjectInfoField label="Name" value={project.name} />
+      <ProjectInfoField label="Owner" value={user.email} />
       <ProjectInfoField label="Description" value={project.description} />
       <ProjectInfoStatus label="Status" value={project.status} />
-      <ProjectInfoField label="Created" value={project.created} />
-      <ProjectInfoField label="Last updated" value={project.updated} />
-      <ProjectInfoField label="Collections" value={project.collections} />
-      <ProjectInfoField label="Endpoints" value={project.endpoints} />
+      <ProjectInfoField label="Created" value={new Date(project.created).toLocaleString()} />
+      <ProjectInfoField label="Last updated" value={new Date(project.updated).toLocaleString()} />
+      <ProjectInfoField label="Collections" value={project.collections_count} />
+      <ProjectInfoField label="Endpoints" value={project.endpoints_count} />
       <ProjectInfoField label="Node version" value={project.node_version} />
     </div>
   );

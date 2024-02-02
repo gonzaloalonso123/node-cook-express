@@ -7,7 +7,7 @@ export const Icon = ({
   fontSize = "24px",
 }) => (
   <i
-    className={`material-symbols-outlined notranslate ` + className}
+    className={`material-symbols-outlined notranslate select-none` + className}
     style={{ fontSize: fontSize }}
   >
     {children}
@@ -21,8 +21,23 @@ export const ColorIcon = ({
   fontSize = "24px",
 }) => (
   <i
-    className={`material-symbols-outlined notranslate ` + className}
+    className={`material-symbols-outlined notranslate select-none` + className}
     style={{ color: color, fontSize: fontSize }}
+  >
+    {children}
+  </i>
+);
+
+export const BoldIcon = ({
+  children,
+  className = "icon-base",
+  fontSize = "24px",
+}) => (
+  <i
+    className={
+      `material-symbols-outlined bold notranslate select-none` + className
+    }
+    style={{ fontSize: fontSize }}
   >
     {children}
   </i>

@@ -2,12 +2,23 @@ import { ColorIcon, Icon } from "./icons/Icon";
 
 const inputStyle =
   "border-2 border-nc-orange rounded-md p-2 disabled:border-transparent";
+const unstyledInputStyle =
+  "disabled:border-transparent rounded-md p-2";
 const buttonStyle =
-  "rounded-md px-2 hover:bg-nc-orange transition-all translate-y-0.5 px-4 border-2";
+  "rounded-md px-2 hover:bg-nc-orange transition-all translate-y-0.5 px-4 border-2 flex items-center justify-center";
 const checkboxStyle = "border-2 border-nc-orange rounded-md p-2";
+
+const selectStyle =
+  "border-2 border-nc-orange rounded-md p-2 disabled:border-transparent";
 
 export const Input = ({ ...props }) => {
   return <input {...props} className={`${inputStyle} ${props.className}`} />;
+};
+
+export const UnstyledInput = ({ ...props }) => {
+  return (
+    <input {...props} className={`${unstyledInputStyle} ${props.className}`} />
+  );
 };
 
 export const Button = ({ big, secondary, ...props }) => {
@@ -20,7 +31,7 @@ export const Button = ({ big, secondary, ...props }) => {
         secondary
           ? "bg-white text-nc-dark-orange border-nc-dark-orange hover:text-white"
           : "bg-nc-dark-orange border-transparent text-white font-bold"
-      } 
+      }  
       ${props.className}`}
     />
   );
@@ -56,9 +67,10 @@ export const Modal = ({
         </button>
       </div>
       {options &&
-        options.map((option) => (
+        options.map((option, i) => (
           <button
             onClick={option.action}
+            key={i}
             className="flex py-3 w-full items-center gap-2 menu-link cursor-pointer px-5"
           >
             <Icon fontSize="24px">{option.icon}</Icon>
@@ -72,9 +84,14 @@ export const Modal = ({
   );
 };
 
-export const WindowContainer = ({ children }) => {
+export const WindowContainer = ({ children, className }) => {
   return (
-    <div className="flex flex-col gap-4 w-full rounded-md border shadow-md p-4 bg-white">
+    <div
+      className={
+        "flex flex-col gap-4 rounded-md border shadow-md p-4 bg-white min-h-96 " +
+        className
+      }
+    >
       {children}
     </div>
   );
@@ -82,8 +99,11 @@ export const WindowContainer = ({ children }) => {
 
 const Loading = () => {
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-nc-dark-orange" />
+    <div className="absolute w-screen h-screen flex items-center justify-center top-0 left-0">
+      <div className="p-6 flex flex-col items-center justify-center bg-white gap-2 rounded-md">
+        <h1 className="text-lg">Loading</h1>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-nc-dark-orange" />
+      </div>
     </div>
   );
 };

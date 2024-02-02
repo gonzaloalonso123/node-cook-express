@@ -5,11 +5,16 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 
 export const AuthenticationContext = createContext();
+
+export const useAuthentication = () => {
+  const context = useContext(AuthenticationContext);
+  return context;
+};
 
 export const AuthenticationProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -51,7 +56,6 @@ export const AuthenticationProvider = ({ children }) => {
       .then((userCredential) => {
         const user = userCredential.user;
         setUser(user);
-        console.log(user);
         setError(null);
       })
       .catch((error) => {

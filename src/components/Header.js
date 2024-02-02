@@ -11,7 +11,7 @@ export const Header = () => {
   const { user } = useContext(AuthenticationContext);
 
   return (
-    <div className="w-full h-12 shadow-md fixed top-0 left-0 flex justify-between px-6 items-center bg-gray-100 z-50">
+    <div className="w-full shadow-md flex justify-between px-6 py-2 items-center bg-gray-100 z-50">
       <div className="flex gap-2 items-end">
         <img src={Logo} className="w-8 h-8" />
         <h1 className="font-black text-xl ">Node cook</h1>

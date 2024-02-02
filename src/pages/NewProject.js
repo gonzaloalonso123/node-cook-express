@@ -1,29 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import { Container } from "../page/Container";
-import { Input } from "../components/Generics";
+import { Button, Input, WindowContainer } from "../components/Generics";
+import { useApi } from "../client/api";
+import { useNavigate } from "react-router-dom";
+import { useUserProjects } from "../hooks/useUserProjects";
 
 export const NewProject = () => {
+  const [name, setName] = useState("");
+  const { projects, setProjects } = useUserProjects();
+  const api = useApi();
+
+  const navigate = useNavigate();
+  const createProject = async () => {
+    const p = await api.post("/projects", { name });
+    setProjects([...projects, p.project]);
+    navigate("/");
+  };
+
   return (
-    <Container title="New Project" subtitle="Create a new project" icon="add">
-      <NewProjectForm />
+    <Container>
+      <WindowContainer className="w-1/3 mx-auto p-4 mt-10 flex flex-col items-center justify-center">
+        <h1 className="text-xl font-bold">New project</h1>
+        <NewProjectForm setName={setName} />
+        <Button onClick={createProject}>Create</Button>
+      </WindowContainer>
     </Container>
   );
 };
 
-const NewProjectForm = () => {
+const NewProjectForm = ({ setName }) => {
   return (
-    <div className="flex flex-col gap-4">
-      <NewProjectFormSection title="Name" />
-      <NewProjectFormSection title="Description" />
+    <div className="flex flex-col gap-4 my-6">
+      <NewProjectFormSection
+        title="Name"
+        onChange={(e) => setName(e.target.value)}
+      />
     </div>
   );
 };
 
 const NewProjectFormSection = ({ title, onChange }) => {
   return (
-    <div className="rounded-md mt-6 flex gap-6">
-      <h1 className="text-xl font-regular w-48">{title}</h1>
-      <Input onChange={onChange} />
+    <div className="flex gap-4 items-end">
+      <Input onChange={onChange} placeholder="Name" />
     </div>
   );
 };

@@ -3,3 +3,9 @@ i.material-symbols-outlined {
   font-size: 150%;
   color: inherit;
 }
+
+i.material-symbols-outlined.bold {
+  font-variation-settings: 'wght' 800;
+  font-size: 150%;
+  color: inherit;
+}

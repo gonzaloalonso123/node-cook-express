@@ -1,6 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import { AuthenticationProvider } from "./providers/AuthenticationProvider";
+import {
+  AuthenticationProvider,
+  useAuthentication,
+} from "./providers/AuthenticationProvider";
 import { Home } from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Page } from "./page/Page";
@@ -14,12 +17,13 @@ import { ProjectApiDoc } from "./pages/ProjectApiDoc";
 import { ProjectDeployment } from "./pages/ProjectDeployment";
 import { ProjectDatabase } from "./pages/ProjectDatabase";
 import { ProjectUsage } from "./pages/ProjectUsage";
-import {
-  ProjectContextProvider,
-  useProjectContext,
-} from "./context/ProjectContext";
+import { ProjectContextProvider } from "./providers/ProjectProvider";
+import { Settings } from "./pages/Settings";
+import { SettingsProvider } from "./providers/SettingsProvider";
+import { GithubSettings } from "./pages/GithubSettings";
 
 const RouteMap = () => {
+  const { user } = useAuthentication();
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
@@ -34,6 +38,7 @@ const PageWrapper = () => (
       <Route index element={<Home />} />
       <Route path="new-project" element={<NewProject />} />
       <Route path="project/:id/*" element={<ProjectWrapper />} />
+      <Route path="settings/*" element={<SettingsWrapper />} />
     </Routes>
   </Page>
 );
@@ -54,6 +59,17 @@ const ProjectWrapper = () => (
       </Routes>
     </Project>
   </ProjectContextProvider>
+);
+
+const SettingsWrapper = () => (
+  <SettingsProvider>
+    <Settings>
+      <Routes>
+        <Route index element={<Settings />} />
+        <Route path="github-settings" element={<GithubSettings />} />
+      </Routes>
+    </Settings>
+  </SettingsProvider>
 );
 
 function App() {

@@ -2,6 +2,7 @@ import React from "react";
 import { Container } from "../page/Container";
 import { ProjectList } from "../components/ProjectList";
 import { useUserProjects } from "../hooks/useUserProjects";
+import { LoadingOrChildren } from "../components/Generics";
 
 export const Home = () => {
   const { projects } = useUserProjects();
@@ -12,7 +13,9 @@ export const Home = () => {
       subtitle="Select your node cook project"
       icon="home"
     >
-      {projects && <ProjectList projects={projects} />}
+      <LoadingOrChildren loading={!projects}>
+        <ProjectList projects={projects} />
+      </LoadingOrChildren>
     </Container>
   );
 };

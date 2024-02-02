@@ -11,6 +11,7 @@ module.exports = {
         "nc-yellow": "#FFEAA7",
         "nc-dark-orange": "#FFA500",
         "nc-dark-green": "#00B894",
+        "nc-blue" : "#350b99"
       },
       dropShadow: {
         "nc-dark-orange": "0 0 10px #FFA500",
