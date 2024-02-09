@@ -26,7 +26,7 @@ const menu = [
   {
     name: "Projects",
     path: "/",
-    icon: "network_node",
+    icon: "apps",
   },
   {
     name: "New project",

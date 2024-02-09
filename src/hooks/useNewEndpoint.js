@@ -3,17 +3,19 @@ import React, { useEffect, useState } from "react";
 export const useNewEndpoint = () => {
   const [collection, setCollection] = useState(null);
   const [method, setMethod] = useState("GET");
-  const [filterBy, setFilterBy] = useState(false);
+  const [filterBy, setFilterBy] = useState("all");
   const [filterByCustom, setFilterByCustom] = useState("none");
   const [requiresAuthentication, setRequiresAuthentication] = useState(false);
   const [requiresAuthorization, setRequiresAuthorization] = useState(false);
   const [authorizedBy, setAuthorizedBy] = useState("none");
   const [url, setUrl] = useState("");
   const [name, setName] = useState("");
+  const [endpointExists, setEndpointExists] = useState(false);
 
   const getEndpoint = () => {
     return {
-      collection: collection.id,
+      collection: collection.name,
+      collectionId: collection.id,
       method,
       filterBy,
       filterByCustom,
@@ -23,6 +25,17 @@ export const useNewEndpoint = () => {
       url,
       name,
     };
+  };
+
+  const checkEndpointExists = () => {
+    if (
+      collection.endpoints.filter((e) => e.url === url && e.method === method)
+        .length > 0
+    ) {
+      setEndpointExists(true);
+      return true;
+    }
+    return false;
   };
 
   useEffect(() => {
@@ -35,7 +48,7 @@ export const useNewEndpoint = () => {
         filterBy == "custom"
           ? `by ${filterByCustom}`
           : filterBy == "id"
-          ? "by Id"
+          ? "by id"
           : ""
       }`
     );
@@ -44,7 +57,7 @@ export const useNewEndpoint = () => {
         filterBy == "id"
           ? "/:id"
           : filterBy == "custom"
-          ? `?getBy={${filterByCustom}}`
+          ? `/by${filterByCustom}/:value`
           : ""
       }`
     );
@@ -67,5 +80,8 @@ export const useNewEndpoint = () => {
     getEndpoint,
     filterByCustom,
     setFilterByCustom,
+    checkEndpointExists,
+    endpointExists,
+    setEndpointExists,
   };
 };

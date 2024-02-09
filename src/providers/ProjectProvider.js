@@ -14,8 +14,9 @@ export const useProjectContext = () => {
 export const ProjectContextProvider = ({ children }) => {
   const { id } = useParams();
   const [project, setProject] = useState(null);
-  const { get, post } = useApi();
+  const { get, post, del } = useApi();
   const { auth } = require("../firebase/index");
+  const { showToast } = require("./ToastProvider");
   const [endpointCreated, setEndpointCreated] = useState(false);
   const [collectionCreated, setCollectionCreated] = useState(false);
 
@@ -39,6 +40,30 @@ export const ProjectContextProvider = ({ children }) => {
     setCollectionCreated(true);
   };
 
+  const removeCollection = async (collectionId) => {
+    await del(`/projects/${id}/collections/${collectionId}`);
+    const collections = project.collections.filter(
+      (collection) => collection.id !== collectionId
+    );
+    setProject({ ...project, collections });
+  };
+
+  const removeEndpoint = async (collectionId, endpointId) => {
+    await del(
+      `/projects/${id}/collections/${collectionId}/endpoints/${endpointId}`
+    );
+    const collections = project.collections.map((c) => {
+      if (c.id === collectionId) {
+        return {
+          ...c,
+          endpoints: c.endpoints.filter((e) => e.id !== endpointId),
+        };
+      }
+      return c;
+    });
+    setProject({ ...project, collections });
+  };
+
   const addEndpoint = async (collectionId, endpoint) => {
     const e = await post(
       `/projects/${id}/collections/${collectionId}/endpoints`,
@@ -54,6 +79,31 @@ export const ProjectContextProvider = ({ children }) => {
     setEndpointCreated(true);
   };
 
+  const addBundleOfEndpoints = async (collectionId, endpoints) => {
+    const e = await post(
+      `/projects/${id}/collections/${collectionId}/bundle-endpoints`,
+      endpoints
+    );
+    const collections = project.collections.map((c) => {
+      if (c.id === collectionId) {
+        return { ...c, endpoints: [...c.endpoints, ...e.endpoints] };
+      }
+      return c;
+    });
+    setProject({ ...project, collections });
+    setEndpointCreated(true);
+  };
+
+  const linkRepository = async (repositoryName) => {
+    const data = await post(`/projects/${id}/repository`, { repositoryName });
+    setProject({ ...project, github: data.repository });
+  };
+
+  const removeRepository = async () => {
+    await del(`/projects/${id}/repository`);
+    setProject({ ...project, github: { enabled: false } });
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -63,7 +113,12 @@ export const ProjectContextProvider = ({ children }) => {
         endpointCreated,
         setCollectionCreated,
         collectionCreated,
+        addBundleOfEndpoints,
         setEndpointCreated,
+        linkRepository,
+        removeRepository,
+        removeCollection,
+        removeEndpoint,
       }}
     >
       {children}

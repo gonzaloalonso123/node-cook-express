@@ -7,6 +7,7 @@ module.exports = {
         "nc-light-green": "#DCFFB7",
         "nc-green" : "#00C9A5",
         "nc-red": "#FF6868",
+        "nc-dark-red": "#F44336",
         "nc-orange": "#FFBB64",
         "nc-yellow": "#FFEAA7",
         "nc-dark-orange": "#FFA500",

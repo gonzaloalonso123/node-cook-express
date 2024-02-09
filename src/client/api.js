@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useAuthentication } from "../providers/AuthenticationProvider";
 import { auth } from "../firebase/index";
+import { useNavigate } from "react-router-dom";
 
 const api = axios.create({
   baseURL: "http://localhost:1998/",
@@ -9,6 +10,7 @@ const api = axios.create({
 
 export const useApi = () => {
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const setAuthorizationHeader = async () => {
     try {
@@ -25,6 +27,9 @@ export const useApi = () => {
       const { data } = await api.get(url);
       return data;
     } catch (error) {
+      if (error.response.status === 401) {
+        navigate("/login");
+      }
       setError(error.message);
     }
   };

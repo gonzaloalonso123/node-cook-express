@@ -1,6 +1,8 @@
 import React from "react";
 import { Container } from "../page/Container";
 import { HeaderMenu } from "../components/ProjectMenu";
+import { useSettings } from "../providers/SettingsProvider";
+import { LoadingOrChildren } from "../components/Generics";
 
 const items = [
   {
@@ -35,6 +37,7 @@ const items = [
   },
 ];
 export const Settings = ({ children }) => {
+  const { settings } = useSettings();
   return (
     <Container
       title="Settings"
@@ -43,7 +46,9 @@ export const Settings = ({ children }) => {
       headerType="static"
       headerChildren={<HeaderMenu items={items} />}
     >
-      <div className="pt-20">{children}</div>
+      <div className="pt-20">
+        <LoadingOrChildren loading={!settings}>{children}</LoadingOrChildren>
+      </div>
     </Container>
   );
 };

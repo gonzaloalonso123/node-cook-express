@@ -21,26 +21,29 @@ import { ProjectContextProvider } from "./providers/ProjectProvider";
 import { Settings } from "./pages/Settings";
 import { SettingsProvider } from "./providers/SettingsProvider";
 import { GithubSettings } from "./pages/GithubSettings";
+import { ToastContextProvider } from "./providers/ToastProvider";
 
 const RouteMap = () => {
   const { user } = useAuthentication();
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="*" element={<PageWrapper />} />
+      {!user && <Route path="/login" element={<Login />} />}
+      {user && <Route path="*" element={<PageWrapper />} />}
     </Routes>
   );
 };
 
 const PageWrapper = () => (
-  <Page>
-    <Routes>
-      <Route index element={<Home />} />
-      <Route path="new-project" element={<NewProject />} />
-      <Route path="project/:id/*" element={<ProjectWrapper />} />
-      <Route path="settings/*" element={<SettingsWrapper />} />
-    </Routes>
-  </Page>
+  <SettingsProvider>
+    <Page>
+      <Routes>
+        <Route index element={<Home />} />
+        <Route path="new-project" element={<NewProject />} />
+        <Route path="project/:id/*" element={<ProjectWrapper />} />
+        <Route path="settings/*" element={<SettingsWrapper />} />
+      </Routes>
+    </Page>
+  </SettingsProvider>
 );
 
 const ProjectWrapper = () => (
@@ -62,21 +65,21 @@ const ProjectWrapper = () => (
 );
 
 const SettingsWrapper = () => (
-  <SettingsProvider>
-    <Settings>
-      <Routes>
-        <Route index element={<Settings />} />
-        <Route path="github-settings" element={<GithubSettings />} />
-      </Routes>
-    </Settings>
-  </SettingsProvider>
+  <Settings>
+    <Routes>
+      <Route index element={<Settings />} />
+      <Route path="github-settings" element={<GithubSettings />} />
+    </Routes>
+  </Settings>
 );
 
 function App() {
   return (
     <BrowserRouter>
       <AuthenticationProvider>
-        <RouteMap />
+        <ToastContextProvider>
+          <RouteMap />
+        </ToastContextProvider>
       </AuthenticationProvider>
     </BrowserRouter>
   );

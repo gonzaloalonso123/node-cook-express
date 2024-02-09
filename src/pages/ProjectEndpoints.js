@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input, WindowContainer } from "../components/Generics";
-import { BoldIcon, ColorIcon } from "../components/icons/Icon";
+import { Button, Input, Modal, WindowContainer } from "../components/Generics";
+import { BoldIcon, ColorIcon, Icon } from "../components/icons/Icon";
 import { Select } from "../components/Select/Select";
 import { useNewEndpoint } from "../hooks/useNewEndpoint";
 import { useProjectContext } from "../providers/ProjectProvider";
@@ -17,13 +17,7 @@ const methods = [
 ];
 
 export const ProjectEndpoints = () => {
-  const {
-    project,
-    endpointCreated,
-    collectionCreated,
-    setEndpointCreated,
-    setCollectionCreated,
-  } = useProjectContext();
+  const { project, endpointCreated, setEndpointCreated } = useProjectContext();
 
   return (
     <WindowContainer>
@@ -43,13 +37,6 @@ export const ProjectEndpoints = () => {
           text="Endpoint created successfully"
           icon="check"
           close={() => setEndpointCreated(false)}
-        />
-      )}
-      {collectionCreated && (
-        <Toast
-          text="Collection created successfully"
-          icon="check"
-          close={() => setCollectionCreated(false)}
         />
       )}
     </WindowContainer>
@@ -91,16 +78,62 @@ const EndpointCollection = ({ collection }) => {
 };
 
 const EndpointCollectionItems = ({ collection }) => {
+  const { addEndpoint, addBundleOfEndpoints } = useProjectContext();
+
+  const generateBasicCrud = async () => {
+    addBundleOfEndpoints(collection.id, [
+      {
+        name: "Get all",
+        method: "GET",
+        url: `/${collection.name.toLowerCase()}`,
+        collectionId: collection.id,
+        filterBy: "all",
+      },
+      {
+        name: "Get by id",
+        method: "GET",
+        url: `/${collection.name.toLowerCase()}/:id`,
+        collectionId: collection.id,
+        filterBy: "id",
+      },
+      {
+        name: "Create",
+        method: "POST",
+        url: `/${collection.name.toLowerCase()}`,
+        collectionId: collection.id,
+      },
+      {
+        name: "Update",
+        method: "PUT",
+        url: `/${collection.name.toLowerCase()}/:id`,
+        collectionId: collection.id,
+      },
+      {
+        name: "Delete",
+        method: "DELETE",
+        url: `/${collection.name.toLowerCase()}/:id`,
+        collectionId: collection.id,
+      },
+    ]);
+  };
+
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 mt-2">
       {collection.endpoints.length > 0 ? (
         collection.endpoints.map((item) => (
           <EndpointItem key={item.id} item={item} />
         ))
       ) : (
-        <div className="p-2 select-none bg-white rounded-md">
-          No endpoints linked to this collection. Click the add button on the
-          top right to generate the first one!
+        <div className="p-4 select-none bg-white rounded-md flex flex-col gap-4">
+          No endpoints linked to this collection.
+          <Button
+            className="w-fit mx-auto"
+            onClick={() => {
+              generateBasicCrud();
+            }}
+          >
+            <BoldIcon color="#fff">add</BoldIcon>Create default endpoints
+          </Button>
         </div>
       )}
     </div>
@@ -108,10 +141,32 @@ const EndpointCollectionItems = ({ collection }) => {
 };
 
 const EndpointItem = ({ item }) => {
+  const { removeEndpoint } = useProjectContext();
+  const { project } = useProjectContext();
+  const [openEndpointOptions, setOpenEndpointOptions] = useState(false);
   return (
-    <div className="flex flex-col gap-2 bg-white rounded-md p-2">
-      <div className="flex gap-2 items-center">
+    <div className="flex flex-col gap-2 bg-white rounded-md p-2 px-4">
+      <div className="flex justify-between items-center">
         <div className="text-lg font-bold">{item.name}</div>
+        <div
+          className="rounded-full p-1 flex items-center justify-center hover:bg-gray-200 cursor-pointer relative"
+          onClick={() => setOpenEndpointOptions(!openEndpointOptions)}
+        >
+          <Icon>more_vert</Icon>
+          {openEndpointOptions && (
+            <Modal
+              close={() => setOpenEndpointOptions(false)}
+              options={[
+                {
+                  title: "Delete",
+                  action: () => removeEndpoint(item.collectionId, item.id),
+                  icon: "delete",
+                },
+              ]}
+              little
+            />
+          )}
+        </div>
       </div>
       <div className="flex items-center gap-3">
         <div
@@ -131,7 +186,7 @@ const EndpointItem = ({ item }) => {
 const AddEndpoint = ({ openDefault }) => {
   const [addEnabled, setAddEnabled] = useState(openDefault);
   return (
-    <div className={`w-1/2 p-4 pt-0 ${addEnabled ? "shadow-md" : ""}`}>
+    <div className={`w-1/2`}>
       <div
         className={`flex w-full ${
           addEnabled ? "justify-between" : "justify-end"
@@ -167,9 +222,10 @@ const NewEndpointForm = ({ disable }) => {
     setRequiresAuthentication,
     setRequiresAuthorization,
     getEndpoint,
+    checkEndpointExists,
+    endpointExists,
+    setEndpointExists,
   } = useNewEndpoint();
-
-  const [endpointCreated, setEndpointCreated] = useState(false);
 
   useEffect(() => {
     setCollection(project.collections[0]);
@@ -177,8 +233,8 @@ const NewEndpointForm = ({ disable }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (checkEndpointExists()) return;
     addEndpoint(collection.id, getEndpoint());
-    setEndpointCreated(true);
     disable();
   };
 
@@ -220,6 +276,14 @@ const NewEndpointForm = ({ disable }) => {
       <div className="flex justify-end gap-4">
         <Button type="submit">Save</Button>
       </div>
+      {endpointExists && (
+        <Toast
+          text="Endpoint already exists"
+          icon="error"
+          error
+          close={() => setEndpointExists(false)}
+        />
+      )}
     </form>
   );
 };

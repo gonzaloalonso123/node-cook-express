@@ -13,33 +13,37 @@ export const useSettings = () => {
 
 export const SettingsProvider = ({ children }) => {
   const [settings, setSettings] = useState(null);
-  const { get } = useApi();
+  const { get, put } = useApi();
   const { auth } = require("../firebase/index");
 
   useEffect(() => {
     if (!auth.currentUser) return;
     const getSettings = async () => {
-      //   const data = await get(`/settings`);
-      //   setSettings(data.settings);
-      setSettings({
-        name: "My Project",
-        logo: "https://cdn.example.com/logo.png",
-        favicon: "https://cdn.example.com/favicon.png",
-        theme: "light",
-        customCss: "body { background-color: #f0f0f0; }",
-        githubSettings: {
-          username: "username",
-          access_token: "access_token",
-        },
-      });
+      const data = await get(`/settings`);
+      setSettings(data.settings);
     };
 
     getSettings();
-  }, []);
+  }, [auth.currentUser]);
+
+  const updateSettings = async (key, data) => {
+    const newSettings = { ...settings, [key]: data };
+    setSettings(newSettings);
+    await putSettings(newSettings);
+  };
+
+  const putSettings = async (data) => {
+    const newData = await put(`/settings`, data);
+    console.log(newData);
+    // setSettings(newData.settings);
+  };
+
   return (
     <ProjectContext.Provider
       value={{
         settings,
+        updateSettings,
+        setSettings,
       }}
     >
       {children}

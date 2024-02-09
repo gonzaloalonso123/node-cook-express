@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { Icon } from "../icons/Icon";
-import './Toast.css'
+import { BoldIcon, Icon } from "../icons/Icon";
+import "./Toast.css";
 
-export const Toast = ({ icon, text, close }) => {
+export const Toast = ({ icon, text, close, error }) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       close();
@@ -12,13 +12,17 @@ export const Toast = ({ icon, text, close }) => {
     };
   }, [close]);
   return (
-    <div className="bg-nc-green text-white p-2 rounded-md pointer-events-auto flex right-12 bottom-12 items-center absolute toast transition-all duration-75 shadow-sm">
+    <div
+      className={`${
+        error ? "bg-nc-red" : "bg-nc-green"
+      } text-white p-2 rounded-md pointer-events-auto flex right-12 bottom-12 items-center absolute toast transition-all duration-75 shadow-xl`}
+    >
       <div className="p-4">
-        <Icon fontSize="24px" color="white">
+        <BoldIcon fontSize="24px" color="white">
           {icon}
-        </Icon>
+        </BoldIcon>
       </div>
-      <h1>{text}</h1>
+      <h1 className="px-4">{text}</h1>
     </div>
   );
 };

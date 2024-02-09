@@ -27,8 +27,9 @@ export const Header = () => {
 const UserDropDown = ({ user }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { logout } = useContext(AuthenticationContext);
+  const navigate = useNavigate();
   return (
-    <div>
+    <div className="relative">
       <div
         className="flex gap-2 items-center px-4 rounded-md cursor-pointer border-2 bg-white"
         onClick={() => setSettingsOpen(!settingsOpen)}
@@ -44,7 +45,7 @@ const UserDropDown = ({ user }) => {
             {
               title: "Configuration",
               icon: "settings",
-              action: () => console.log("general"),
+              action: () => navigate("/settings/general"),
             },
             {
               title: "Account",
