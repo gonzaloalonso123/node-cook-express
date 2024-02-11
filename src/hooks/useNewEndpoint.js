@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useToast } from "../providers/ToastProvider";
+import toasts from "../content/toasts.json";
 
 export const useNewEndpoint = () => {
   const [collection, setCollection] = useState(null);
@@ -10,7 +12,7 @@ export const useNewEndpoint = () => {
   const [authorizedBy, setAuthorizedBy] = useState("none");
   const [url, setUrl] = useState("");
   const [name, setName] = useState("");
-  const [endpointExists, setEndpointExists] = useState(false);
+  const { showToast } = useToast();
 
   const getEndpoint = () => {
     return {
@@ -32,7 +34,7 @@ export const useNewEndpoint = () => {
       collection.endpoints.filter((e) => e.url === url && e.method === method)
         .length > 0
     ) {
-      setEndpointExists(true);
+      showToast(toasts.endpoint_exists);
       return true;
     }
     return false;
@@ -53,12 +55,12 @@ export const useNewEndpoint = () => {
       }`
     );
     setUrl(
-      `/${collection.name.toLowerCase()}${
+      `${
         filterBy == "id"
           ? "/:id"
           : filterBy == "custom"
           ? `/by${filterByCustom}/:value`
-          : ""
+          : "/"
       }`
     );
     console.log(collection);
@@ -81,7 +83,5 @@ export const useNewEndpoint = () => {
     filterByCustom,
     setFilterByCustom,
     checkEndpointExists,
-    endpointExists,
-    setEndpointExists,
   };
 };

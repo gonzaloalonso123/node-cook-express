@@ -44,10 +44,10 @@ export const useApi = () => {
     }
   };
 
-  const put = async (url, body) => {
+  const patch = async (url, body) => {
     await setAuthorizationHeader();
     try {
-      const { data } = await api.put(url, body);
+      const { data } = await api.patch(url, body);
       return data;
     } catch (error) {
       setError(error.message);
@@ -64,5 +64,5 @@ export const useApi = () => {
     }
   };
 
-  return { error, get, post, put, del };
+  return { error, get, post, patch, del };
 };

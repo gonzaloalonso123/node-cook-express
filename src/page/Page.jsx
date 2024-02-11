@@ -8,12 +8,12 @@ import { ScrollProvider } from "../hooks/scrollContext";
 export const Page = ({ children }) => {
   const ref = useRef(null);
   return (
-    <div className="flex w-screen h-screen">
+    <div className="flex w-screen h-screen overflow-hidden">
       <SideNav />
-      <div className="w-full h-full flex flex-col">
+      <div className="flex flex-col w-full">
         <Header />
         <ScrollProvider targetRef={ref}>
-          <div className="overflow-auto" ref={ref}>
+          <div className="h-full" ref={ref}>
             {children}
           </div>
         </ScrollProvider>

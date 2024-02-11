@@ -46,7 +46,7 @@ export const Settings = ({ children }) => {
       headerType="static"
       headerChildren={<HeaderMenu items={items} />}
     >
-      <div className="pt-20">
+      <div className="pt-10">
         <LoadingOrChildren loading={!settings}>{children}</LoadingOrChildren>
       </div>
     </Container>

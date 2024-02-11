@@ -1,0 +1,58 @@
+{
+  "collection_created": {
+    "text": "Collection created succesfully",
+    "icon": "done"
+  },
+  "endpoint_created": {
+    "text": "Endpoint created succesfully",
+    "icon": "done"
+  },
+  "endpoint_deleted": {
+    "text": "Endpoint deleted succesfully",
+    "icon": "done"
+  },
+  "collection_deleted": {
+    "text": "Collection deleted succesfully",
+    "icon": "done"
+  },
+  "collection_updated": {
+    "text": "Collection updated succesfully",
+    "icon": "done"
+  },
+  "code_updated": {
+    "text": "Code updated succesfully",
+    "icon": "done"
+  },
+  "repository_lined": {
+    "text": "Repository linked succesfully",
+    "icon": "done"
+  },
+  "repository_unlinked": {
+    "text": "Repository unlinked succesfully",
+    "icon": "done"
+  },
+  "collection_exists": {
+    "text": "Collection already exists",
+    "icon": "error",
+    "error": true
+  },
+  "endpoint_exists": {
+    "text": "Endpoint already exists",
+    "icon": "error",
+    "error": true
+  },
+  "pushed_to_repository": {
+    "text": "Pushed to repository succesfully",
+    "icon": "done"
+  },
+  "empty_field": {
+    "text": "Field cannot be empty",
+    "icon": "error",
+    "error": true
+  },
+  "no_spaces": {
+    "text": "Collection name cannot contain spaces",
+    "icon": "error",
+    "error": true
+  }
+}

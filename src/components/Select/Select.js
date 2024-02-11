@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "../icons/Icon";
 
-export const Select = ({ options, onChange, color }) => {
+export const Select = ({ options, onChange, color, value, disabled, fit }) => {
   const [s, setS] = useState(options[0]);
   const [expanded, setExpanded] = useState(false);
   const ref = useRef(null);
@@ -19,22 +19,29 @@ export const Select = ({ options, onChange, color }) => {
     };
   }, [ref]);
 
+  useEffect(() => {
+    if (value === undefined) return;
+    setS(options.find((o) => o.value === value));
+  }, [value, options]);
+
   return (
     <div
-      className={`flex flex-col relative rounded-md bg-white ${
-        !expanded ? `border-black` : "border-transparent"
-      } `}
+      className={`flex flex-col relative flex-1 ${
+        disabled ? "bg-gray-100" : "bg-white"
+      } rounded-md  ${!expanded ? `border-nc-yellow` : "border-transparent"} `}
       ref={ref}
     >
       <div
-        className="cursor-pointer w-48 p-2 text-nc-black flex items-center justify-between"
-        onClick={() => setExpanded(!expanded)}
+        className={`cursor-pointer w-full ${
+          fit ? "" : "min-w-48"
+        } p-2 text-nc-black flex items-center justify-between`}
+        onClick={() => setExpanded(disabled ? false : !expanded)}
       >
         {s.label}
         <Icon fontSize="24px">arrow_drop_down</Icon>
       </div>
       {expanded && (
-        <div className="absolute top-0 left-0 w-48 bg-white p-2 rounded-md border border-black z-10">
+        <div className="absolute top-0 left-0 w-full bg-white p-2 rounded-md shadow-md border border-gray-500 z-10 max-h-48 overflow-scroll">
           <ul>
             <li
               key={s.value}

@@ -5,26 +5,32 @@ import ProjectContext, {
 } from "../providers/ProjectProvider";
 import github_icon from "../assets/images/github.png";
 import { BoldIcon, ColorIcon, Icon } from "../components/icons/Icon";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGithub } from "../hooks/useGithub";
 import { useSettings } from "../providers/SettingsProvider";
 import { Toast } from "../components/toast/Toast";
 import { Select } from "../components/Select/Select";
 
 export const ProjectCode = () => (
-  <WindowContainer>
-    <h1 className="text-2xl font-bold">Code</h1>
-    <p>Generate code and push it to your github repository</p>
-    <GithubIntegration />
+  <WindowContainer className="flex flex-row">
+    <div className="flex flex-col">
+      <div className="flex gap-6">
+        <GithubIntegration />
+        <GithubCodeInformation />
+      </div>
+    </div>
   </WindowContainer>
 );
 
 const GithubIntegration = () => {
   const { project } = useProjectContext();
-  useEffect(() => {
-    console.log(project);
-  }, []);
-  return project.github.enabled ? <GithubRepository /> : <AddRepository />;
+  return (
+    <div className="flex flex-col gap-2 w-1/2">
+      <h1 className="text-2xl font-bold mb-4">Code</h1>
+      <p>Generate code and push it to your github repository</p>
+      {project.github.enabled ? <GithubRepository /> : <AddRepository />}
+    </div>
+  );
 };
 
 const AddRepository = () => {
@@ -174,16 +180,16 @@ const CloneFailed = () => {
 
 const GithubRepository = () => {
   const { project } = useProjectContext();
-  const { cloneRepository, loading, pushedToRepo, setPushedToRepo } =
-    useGithub();
+  const { cloneRepository, loading } = useGithub();
   const [codeSettings, setCodeSettings] = useState({
     indentation: "2",
     language: "javascript",
-    port: "3000",
+    port: project.port || "6999",
     framework: "express",
+    wipe: false,
   });
   return (
-    <div className="shadow-md rounded-md w-1/2">
+    <div className="shadow-md rounded-md">
       <div className="p-2 flex flex-col">
         <GithubRepositoryHeader />
         <GithubRepositoryOptions
@@ -191,17 +197,10 @@ const GithubRepository = () => {
           codeSettings={codeSettings}
         />
         <GithubRepositoryButton
-          onClick={() => cloneRepository(project.id)}
+          onClick={() => cloneRepository(project.id, codeSettings)}
           loading={loading}
         />
       </div>
-      {pushedToRepo && (
-        <Toast
-          text="Pushed to repository"
-          icon="check"
-          close={() => setPushedToRepo(false)}
-        />
-      )}
     </div>
   );
 };
@@ -211,7 +210,7 @@ const GithubRepositoryHeader = () => {
   const [openRepositoryOptions, setOpenRepositoryOptions] = useState(false);
 
   return (
-    <div className="justify-between flex border-b border-gray-200 p-2 bg-gray-100">
+    <div className="justify-between flex border-b border-gray-200 p-2 bg-gray-100 rounded-md">
       <div className="flex gap-2">
         <img src={github_icon} className="w-6 h-6" />
         <h1 className="text-xl font-bold">{project.github.repository_name}</h1>
@@ -238,7 +237,7 @@ const GithubRepositoryHeader = () => {
 const GithubRepositoryOptions = ({ setCodeSettings, codeSettings }) => {
   const { project } = useProjectContext();
   return (
-    <div className="flex flex-col gap-4 p-2">
+    <div className="flex flex-col gap-1 p-2">
       <Option title="Branch" value={project.github.branch} />
       <OptionSelect
         title="Language"
@@ -274,19 +273,29 @@ const GithubRepositoryOptions = ({ setCodeSettings, codeSettings }) => {
         }}
         value={codeSettings.port}
       />
+      <OptionSelect
+        title="Wipe previous repository data"
+        onChange={(value) => {
+          setCodeSettings({ ...codeSettings, wipe: value });
+        }}
+        options={[
+          { label: "No", value: false },
+          { label: "Yes", value: true },
+        ]}
+      />
     </div>
   );
 };
 
 const Option = ({ title, value, onChange }) => (
-  <div className="flex justify-between py-2 items-centers">
+  <div className="flex justify-between py-2 items-center">
     <h1 className="font-regular w-1/2">{title}</h1>
     <Input onChange={onChange} value={value} />
   </div>
 );
 
 const OptionSelect = ({ title, value, options, onChange }) => (
-  <div className="flex justify-between py-2 items-centers">
+  <div className="flex justify-between py-2 items-center">
     <h1 className="font-regular w-1/2">{title}</h1>
     <Select value={value} options={options} onChange={onChange} />
   </div>
@@ -298,7 +307,10 @@ const GithubRepositoryButton = ({ onClick, children, loading }) => (
     className="p-2 bg-nc-green text-white mt-4 rounded-md shadow-md hover:font-regular hover:brightness-95 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 flex items-center justify-between gap-2"
     onClick={onClick}
   >
-    {loading ? "Pushing" : "Push"} backend to repository
+    <div className="flex gap-2 items-center">
+      <Icon>publish</Icon>
+      <h1 className="font-bold">{loading ? "Cooking" : "Cook"} backend</h1>
+    </div>
     {loading ? (
       <Icon className="animate-spin" fontSize="24px">
         sync
@@ -308,3 +320,91 @@ const GithubRepositoryButton = ({ onClick, children, loading }) => (
     )}
   </button>
 );
+
+const GithubCodeInformation = () => {
+  const [moreInfoExpanded, setMoreInfoExpanded] = useState(false);
+  return (
+    <div className="flex flex-col w-1/2">
+      <h1 className="text-2xl font-bold mb-4">Usage</h1>
+      <div className="bg-nc-yellow rounded-md p-2 mt-6 h-fit">
+        <Info />
+        <div
+          className="cursor-pointer flex gap-3 w-fit mx-auto mt-6 items-center"
+          onClick={() => setMoreInfoExpanded(!moreInfoExpanded)}
+        >
+          <Icon
+            className={`
+            ${moreInfoExpanded ? "transform rotate-180" : ""}
+          `}
+          >
+            keyboard_arrow_down
+          </Icon>
+          <label className="underline text-sm cursor-pointer">
+            How to run my backend?
+          </label>
+        </div>
+        {moreInfoExpanded && <RunMyDb />}
+      </div>
+    </div>
+  );
+};
+
+const Info = () => (
+  <div className="flex flex-col">
+    <div className="flex items-center">
+      <div className="p-4">
+        <Icon>question_mark</Icon>
+      </div>
+      <p className="p-2">
+        Ready to deploy your changes? Submit your updates to upload a fresh
+        backend to your repository. Our package includes an Express server, a
+        database connection, and a set of pre-configured endpoints to jumpstart
+        your project.
+      </p>
+    </div>
+  </div>
+);
+
+const RunMyDb = () => {
+  const { project } = useProjectContext();
+  const { settings } = useSettings();
+  const projectUrl = `https://github.com/${settings.github.username}/${project.github.repository_name}`;
+  return (
+    <div className="p-2">
+      <p className="py-4">
+        <h1 className="font-bold">
+          1. Clone Your Repository to Your Local Machine:
+        </h1>
+        <CopyableCodeSnippet code={`git clone ${projectUrl}`} />
+        <h1 className="font-bold">2. navigate to the root of your directory</h1>
+        <CopyableCodeSnippet code={`cd ${project.github.repository_name}`} />
+        <h1 className="font-bold">3. Run the docker:</h1>
+        Additionally, your repository includes a Dockerfile and a docker-compose
+        file for containerized deployment. <br/> Ensure Docker is installed and
+        execute the following command in your repository's root:
+        <CopyableCodeSnippet code="docker-compose up" />
+        Explore deployment options in the{" "}
+        <Link to="deployment">Deployment</Link> tab.
+      </p>
+    </div>
+  );
+};
+
+const CopyableCodeSnippet = ({ code }) => {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className="flex flex-col gap-2 py-4">
+      <div className="flex gap-2 items-center">
+        <Input value={code} readOnly />
+        <Button
+          onClick={() => {
+            navigator.clipboard.writeText(code);
+            setCopied(true);
+          }}
+        >
+          {copied ? "Copied!" : "Copy"}
+        </Button>
+      </div>
+    </div>
+  );
+};

@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useApi } from "../client/api";
+import toasts from "../content/toasts.json";
+import { useToast } from "./ToastProvider";
 
 const ProjectContext = createContext();
 
@@ -14,11 +16,9 @@ export const useProjectContext = () => {
 export const ProjectContextProvider = ({ children }) => {
   const { id } = useParams();
   const [project, setProject] = useState(null);
-  const { get, post, del } = useApi();
+  const { get, post, del, patch } = useApi();
   const { auth } = require("../firebase/index");
-  const { showToast } = require("./ToastProvider");
-  const [endpointCreated, setEndpointCreated] = useState(false);
-  const [collectionCreated, setCollectionCreated] = useState(false);
+  const { showToast } = useToast()
 
   useEffect(() => {
     if (!auth.currentUser) return;
@@ -37,7 +37,7 @@ export const ProjectContextProvider = ({ children }) => {
       ...project,
       collections: [...project.collections, c.collection],
     });
-    setCollectionCreated(true);
+    showToast(toasts.collection_created);
   };
 
   const removeCollection = async (collectionId) => {
@@ -46,7 +46,20 @@ export const ProjectContextProvider = ({ children }) => {
       (collection) => collection.id !== collectionId
     );
     setProject({ ...project, collections });
+    showToast(toasts.collection_deleted);
   };
+
+  const updateCollection = async (collection) => {
+    await patch(`/projects/${id}/collections/${collection.id}`, collection);
+    const collections = project.collections.map((c) => {
+      if (c.id === collection.id) {
+        return collection;
+      }
+      return c;
+    });
+    setProject({ ...project, collections });
+    showToast(toasts.collection_updated);
+  }
 
   const removeEndpoint = async (collectionId, endpointId) => {
     await del(
@@ -62,6 +75,7 @@ export const ProjectContextProvider = ({ children }) => {
       return c;
     });
     setProject({ ...project, collections });
+    showToast(toasts.endpoint_deleted);
   };
 
   const addEndpoint = async (collectionId, endpoint) => {
@@ -76,7 +90,7 @@ export const ProjectContextProvider = ({ children }) => {
       return c;
     });
     setProject({ ...project, collections });
-    setEndpointCreated(true);
+    showToast(toasts.endpoint_created);
   };
 
   const addBundleOfEndpoints = async (collectionId, endpoints) => {
@@ -91,17 +105,19 @@ export const ProjectContextProvider = ({ children }) => {
       return c;
     });
     setProject({ ...project, collections });
-    setEndpointCreated(true);
+    showToast(toasts.endpoint_created);
   };
 
   const linkRepository = async (repositoryName) => {
     const data = await post(`/projects/${id}/repository`, { repositoryName });
     setProject({ ...project, github: data.repository });
+    showToast(toasts.repository_linked);
   };
 
   const removeRepository = async () => {
     await del(`/projects/${id}/repository`);
     setProject({ ...project, github: { enabled: false } });
+    showToast(toasts.repository_unlinked);
   };
 
   return (
@@ -110,15 +126,12 @@ export const ProjectContextProvider = ({ children }) => {
         project,
         addCollection,
         addEndpoint,
-        endpointCreated,
-        setCollectionCreated,
-        collectionCreated,
         addBundleOfEndpoints,
-        setEndpointCreated,
         linkRepository,
         removeRepository,
         removeCollection,
         removeEndpoint,
+        updateCollection
       }}
     >
       {children}

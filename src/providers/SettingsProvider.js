@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useApi } from "../client/api";
+import { useToast } from "./ToastProvider";
+import toasts from "../content/toasts.json";
 
 const ProjectContext = createContext();
 
@@ -15,6 +17,7 @@ export const SettingsProvider = ({ children }) => {
   const [settings, setSettings] = useState(null);
   const { get, put } = useApi();
   const { auth } = require("../firebase/index");
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (!auth.currentUser) return;
@@ -29,6 +32,7 @@ export const SettingsProvider = ({ children }) => {
   const updateSettings = async (key, data) => {
     const newSettings = { ...settings, [key]: data };
     setSettings(newSettings);
+    showToast({ text: `Updated settings: ${key}`, icon: "done" });
     await putSettings(newSettings);
   };
 

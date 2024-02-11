@@ -61,7 +61,7 @@ export const Project = ({ children }) => {
       headerType="static"
       headerChildren={<HeaderMenu items={items} />}
     >
-      <div className="pt-20">
+      <div className="pt-10">
         <LoadingOrChildren loading={!project}>{children}</LoadingOrChildren>
       </div>
     </Container>

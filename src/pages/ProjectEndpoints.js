@@ -5,19 +5,17 @@ import { Select } from "../components/Select/Select";
 import { useNewEndpoint } from "../hooks/useNewEndpoint";
 import { useProjectContext } from "../providers/ProjectProvider";
 import { Toast } from "../components/toast/Toast";
+import { initialEndpointBundle } from "../content/initialEndpointBundle.js";
 
 const methods = [
   { label: "GET", value: "GET", color: "bg-green-500" },
   { label: "POST", value: "POST", color: "bg-blue-500" },
-  { label: "PUT", value: "PUT", color: "bg-yellow-500" },
   { label: "DELETE", value: "DELETE", color: "bg-red-500" },
   { label: "PATCH", value: "PATCH", color: "bg-purple-500" },
-  { label: "OPTIONS", value: "OPTIONS", color: "bg-orange-500" },
-  { label: "HEAD", value: "HEAD", color: "bg-gray-500" },
 ];
 
 export const ProjectEndpoints = () => {
-  const { project, endpointCreated, setEndpointCreated } = useProjectContext();
+  const { project } = useProjectContext();
 
   return (
     <WindowContainer>
@@ -32,13 +30,6 @@ export const ProjectEndpoints = () => {
           <h1 className="mt-10">No collections available</h1>
         )}
       </div>
-      {endpointCreated && (
-        <Toast
-          text="Endpoint created successfully"
-          icon="check"
-          close={() => setEndpointCreated(false)}
-        />
-      )}
     </WindowContainer>
   );
 };
@@ -62,7 +53,7 @@ const EndpointCollection = ({ collection }) => {
         className="flex justify-between w-full items-center"
         onClick={() => setExpanded(!expanded)}
       >
-        <div className="text-lg font-bold">{collection.name}</div>
+        <div className="text-lg font-bold">/{collection.name}</div>
         <ColorIcon
           color="black"
           className={`${
@@ -78,43 +69,10 @@ const EndpointCollection = ({ collection }) => {
 };
 
 const EndpointCollectionItems = ({ collection }) => {
-  const { addEndpoint, addBundleOfEndpoints } = useProjectContext();
+  const { addBundleOfEndpoints } = useProjectContext();
 
   const generateBasicCrud = async () => {
-    addBundleOfEndpoints(collection.id, [
-      {
-        name: "Get all",
-        method: "GET",
-        url: `/${collection.name.toLowerCase()}`,
-        collectionId: collection.id,
-        filterBy: "all",
-      },
-      {
-        name: "Get by id",
-        method: "GET",
-        url: `/${collection.name.toLowerCase()}/:id`,
-        collectionId: collection.id,
-        filterBy: "id",
-      },
-      {
-        name: "Create",
-        method: "POST",
-        url: `/${collection.name.toLowerCase()}`,
-        collectionId: collection.id,
-      },
-      {
-        name: "Update",
-        method: "PUT",
-        url: `/${collection.name.toLowerCase()}/:id`,
-        collectionId: collection.id,
-      },
-      {
-        name: "Delete",
-        method: "DELETE",
-        url: `/${collection.name.toLowerCase()}/:id`,
-        collectionId: collection.id,
-      },
-    ]);
+    addBundleOfEndpoints(collection.id, initialEndpointBundle(collection));
   };
 
   return (
@@ -177,7 +135,7 @@ const EndpointItem = ({ item }) => {
           {item.method}
         </div>
 
-        <div className="text-sm text-gray-600">{item.url}</div>
+        <div className="text-sm bg-gray-400 p-1 rounded-md text-white font-bold w-fit">{item.url}</div>
       </div>
     </div>
   );
@@ -223,8 +181,6 @@ const NewEndpointForm = ({ disable }) => {
     setRequiresAuthorization,
     getEndpoint,
     checkEndpointExists,
-    endpointExists,
-    setEndpointExists,
   } = useNewEndpoint();
 
   useEffect(() => {
@@ -276,14 +232,6 @@ const NewEndpointForm = ({ disable }) => {
       <div className="flex justify-end gap-4">
         <Button type="submit">Save</Button>
       </div>
-      {endpointExists && (
-        <Toast
-          text="Endpoint already exists"
-          icon="error"
-          error
-          close={() => setEndpointExists(false)}
-        />
-      )}
     </form>
   );
 };

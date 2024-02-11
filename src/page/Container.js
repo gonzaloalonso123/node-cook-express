@@ -12,7 +12,7 @@ export const Container = ({
 }) => {
   return (
     <div
-      className={`w-full border pt-10 bg-gray-100 transition-all duration-100 min-h-screen`}
+      className={`flex flex-col w-full border bg-gray-100 transition-all duration-100 h-full`}
     >
       <Header
         title={title}
@@ -21,7 +21,7 @@ export const Container = ({
         headerType={headerType}
         headerChildren={headerChildren}
       />
-      <div className="px-10 pb-10 mt-10 min-h-screen overflow-auto">
+      <div className="px-10 pb-28 overflow-auto flex-grow">
         {children}
       </div>
     </div>
@@ -54,7 +54,7 @@ export const Header = ({
 };
 
 export const StaticHeader = ({ title, icon, subtitle, children }) => (
-  <div className="flex flex-col p-10 fixed shadow-md top-0 pt-14 bg-white w-full py-3 gap-6 z-10">
+  <div className="flex flex-col p-10 shadow-md bg-white w-full py-3 gap-6 z-10">
     <div className="flex flex-row items-end gap-6 ">
       <div className="flex gap-2 items-center">
         <ColorIcon color="FFBB64" fontSize="30px">

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useApi } from "../client/api";
-import { useProjectContext } from "../providers/ProjectProvider";
+import { useToast } from "../providers/ToastProvider";
+import toasts from "../content/toasts.json";
 
 export const useGithub = () => {
   const { get, post, del } = useApi();
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [pushedToRepo, setPushedToRepo] = useState(false);
-  const { project } = useProjectContext();
+  const { showToast } = useToast();
   const { auth } = require("../firebase/index");
 
   useEffect(() => {
@@ -22,7 +22,6 @@ export const useGithub = () => {
 
   const addGithubProfile = async (profile) => {
     const data = await post(`/github/profile`, profile);
-    console.log(data);
     if (data) setUserProfile(data.profile);
   };
 
@@ -36,15 +35,15 @@ export const useGithub = () => {
     if (data) setUserProfile(data.profile);
   };
 
-  const cloneRepository = async (projectId) => {
+  const cloneRepository = async (projectId, codeSettings) => {
     setLoading(true);
     console.log(projectId);
     const data = await post(`/writer/write-backend`, {
       projectId,
+      options: codeSettings,
     });
     setLoading(false);
-    setPushedToRepo(true);
-
+    showToast(toasts.pushed_to_repository);
     return data;
   };
 
@@ -56,7 +55,5 @@ export const useGithub = () => {
     userProfile,
     cloneRepository,
     loading,
-    pushedToRepo,
-    setPushedToRepo,
   };
 };

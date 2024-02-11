@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { ColorIcon, Icon } from "./icons/Icon";
 
 const inputStyle =
-  "border-2 border-nc-orange rounded-md p-2 disabled:border-transparent";
+  "focus:outline-none focus:ring-0 focus:border-gray-500 border rounded-md p-2 disabled:border-transparent";
 const unstyledInputStyle =
   "disabled:border-transparent rounded-md p-2 border-2 border-gray-200";
 const buttonStyle =
@@ -11,6 +11,8 @@ const buttonPrimary =
   "bg-nc-orange border-nc-orange text-white font-bold hover:bg-nc-dark-orange";
 const buttonSecondary =
   "bg-white text-nc-dark-orange border-nc-dark-orange hover:bg-gray-100";
+const buttonCreate =
+  "bg-nc-green border-nc-green text-white font-bold hover:bg-nc-dark-green";
 const checkboxStyle = "border-2 border-nc-orange rounded-md p-2";
 const dangerButtonPrimary =
   "bg-nc-red border-nc-red text-white font-bold hover:bg-nc-dark-red";
@@ -31,13 +33,13 @@ export const UnstyledInput = ({ ...props }) => {
   );
 };
 
-export const Button = ({ big, secondary, ...props }) => {
+export const Button = ({ big, secondary, create, ...props }) => {
   return (
     <button
       {...props}
       className={`${buttonStyle} 
       ${big ? "py-2 px-4" : ""} 
-      ${secondary ? buttonSecondary : buttonPrimary}  
+      ${secondary ? buttonSecondary : create ? buttonCreate : buttonPrimary}  
       ${props.className}`}
     />
   );
@@ -88,9 +90,9 @@ export const Modal = ({
   return (
     <div
       ref={ref}
-      className={`absolute bg-white w-48 flex top-8 left-8 flex-col border border-gray-200 ${little ? 'p-1' : 'py-2'} rounded-md shadow-md ${
-        inverted ? "-translate-x-48" : ""
-      }`}
+      className={`absolute bg-white w-48 flex top-8 left-8 flex-col border border-gray-200 ${
+        little ? "p-1" : "py-2"
+      } rounded-md shadow-md ${inverted ? "-translate-x-48" : ""}`}
     >
       <div className="flex w-full justify-between px-4 items-center">
         <h1 className={`${little ? "" : "text-xl"} font-bold`}>{title}</h1>

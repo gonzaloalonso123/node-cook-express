@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { Toast } from "../components/toast/Toast";
 
 const ToastContext = createContext();
@@ -10,6 +10,9 @@ export const useToast = () => {
 
 export const ToastContextProvider = ({ children }) => {
   const [toast, showToast] = useState(null);
+  useEffect(() => {
+    console.log(toast);
+  }, [toast]);
   return (
     <ToastContext.Provider
       value={{
