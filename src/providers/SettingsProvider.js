@@ -15,7 +15,7 @@ export const useSettings = () => {
 
 export const SettingsProvider = ({ children }) => {
   const [settings, setSettings] = useState(null);
-  const { get, put } = useApi();
+  const { get, patch } = useApi();
   const { auth } = require("../firebase/index");
   const { showToast } = useToast();
 
@@ -37,7 +37,7 @@ export const SettingsProvider = ({ children }) => {
   };
 
   const putSettings = async (data) => {
-    const newData = await put(`/settings`, data);
+    const newData = await patch(`/settings`, data);
     console.log(newData);
     // setSettings(newData.settings);
   };
