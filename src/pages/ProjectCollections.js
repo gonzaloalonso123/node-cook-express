@@ -169,6 +169,10 @@ const NewCollectionForm = ({ disable }) => {
       showToast(toasts.no_spaces);
       return true;
     }
+    if (name === "") {
+      showToast(toasts.empty_name);
+      return true;
+    }
     if (fields.find((f) => f.name === "")) {
       showToast(toasts.empty_field);
       return true;

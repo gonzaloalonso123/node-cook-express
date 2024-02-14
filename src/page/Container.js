@@ -76,7 +76,6 @@ const ScrollableHeader = ({ title, icon, subtitle }) => (
       </ColorIcon>
       <h1 className="text-3xl font-bold">{title}</h1>
     </div>
-    <hr className="my-4 w-48" />
     <h2 className="text-xl font-bold text-nc-dark-orange">{subtitle}</h2>
   </div>
 );

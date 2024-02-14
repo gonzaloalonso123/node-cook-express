@@ -1,11 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useAuthentication } from "../providers/AuthenticationProvider";
 import { auth } from "../firebase/index";
 import { useNavigate } from "react-router-dom";
 
 const api = axios.create({
-  baseURL: "http://localhost:1998/",
+  baseURL: "http://localhost:1998/" || process.env.REACT_APP_API_URL,
 });
 
 export const useApi = () => {

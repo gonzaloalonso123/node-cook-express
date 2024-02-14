@@ -210,7 +210,7 @@ const NewProfileForm = ({ close }) => {
         onChange={(e) => setAccessToken(e.target.value)}
       />
       <div className="flex justify-end gap-4 mt-6">
-        <Button secondary>Cancel</Button>
+        <Button type="button" secondary>Cancel</Button>
         <Button onClick={submit}>Save</Button>
       </div>
       <GithubProfileInformation />

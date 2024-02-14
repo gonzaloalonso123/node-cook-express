@@ -59,7 +59,7 @@ const AddRepositoryButton = ({ onClick }) => (
 const NewRepository = ({ close }) => {
   const { settings } = useSettings();
   return (
-    <div className="flex flex-col gap-4 w-1/2 p-2 border border-gray-100 rounded-md shadow-md">
+    <div className="flex flex-col gap-4 p-2 border border-gray-100 rounded-md shadow-md">
       <div className="flex justify-between px-2">
         <div className="flex flex-row gap-2">
           <img src={github_icon} className="w-6 h-6" />
@@ -323,6 +323,7 @@ const GithubRepositoryButton = ({ onClick, children, loading }) => (
 
 const GithubCodeInformation = () => {
   const [moreInfoExpanded, setMoreInfoExpanded] = useState(false);
+  const { settings } = useSettings();
   return (
     <div className="flex flex-col w-1/2">
       <h1 className="text-2xl font-bold mb-4">Usage</h1>
@@ -357,7 +358,7 @@ const Info = () => (
       </div>
       <p className="p-2">
         Ready to deploy your changes? Submit your updates to upload a fresh
-        backend to your repository. Our package includes an Express server, a
+        backend to your repository. Your package includes an Express server, a
         database connection, and a set of pre-configured endpoints to jumpstart
         your project.
       </p>
@@ -368,7 +369,9 @@ const Info = () => (
 const RunMyDb = () => {
   const { project } = useProjectContext();
   const { settings } = useSettings();
-  const projectUrl = `https://github.com/${settings.github.username}/${project.github.repository_name}`;
+  const repository_name = project.github ? project.github.repository_name : "your-repo";
+  const user_name = settings.github ? settings.github.username : "your-username";
+  const projectUrl = `https://github.com/${user_name}/${repository_name}`;
   return (
     <div className="p-2">
       <p className="py-4">
@@ -377,10 +380,10 @@ const RunMyDb = () => {
         </h1>
         <CopyableCodeSnippet code={`git clone ${projectUrl}`} />
         <h1 className="font-bold">2. navigate to the root of your directory</h1>
-        <CopyableCodeSnippet code={`cd ${project.github.repository_name}`} />
+        <CopyableCodeSnippet code={`cd ${repository_name}`} />
         <h1 className="font-bold">3. Run the docker:</h1>
         Additionally, your repository includes a Dockerfile and a docker-compose
-        file for containerized deployment. <br/> Ensure Docker is installed and
+        file for containerized deployment. <br /> Ensure Docker is installed and
         execute the following command in your repository's root:
         <CopyableCodeSnippet code="docker-compose up" />
         Explore deployment options in the{" "}

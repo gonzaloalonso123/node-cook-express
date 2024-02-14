@@ -10,7 +10,8 @@ export const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const signIn = () => {
+  const signIn = (e) => {
+    e.preventDefault();
     login(email, password);
   };
 
@@ -18,12 +19,10 @@ export const Login = () => {
     register(email, password);
   };
 
-  useEffect(() => {
-    if (user) navigate("/");
-  }, [user, navigate]);
+  useEffect(() => {}, [user, navigate]);
 
   return (
-    <div className="flex w-full items-center justify-center h-screen">
+    <form className="flex w-full items-center justify-center h-screen">
       <div className="flex flex-col w-96 gap-6 mx-auto">
         <div className={`flex flex-col`}>
           <div className="flex gap-2 items-center">
@@ -32,7 +31,6 @@ export const Login = () => {
             </ColorIcon>
             <h1 className="text-3xl font-bold">Login</h1>
           </div>
-          <hr className="my-4 w-48" />
           <h2 className="text-xl font-bold text-nc-dark-orange">
             Log in or sign up to access your account
           </h2>
@@ -48,15 +46,15 @@ export const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <div className="flex justify-between mt-10 w-full">
-          <Button secondary big onClick={signUp}>
+          <Button secondary big onClick={signUp} type="button">
             Register
           </Button>
-          <Button big onClick={signIn}>
+          <Button big type="submit" onClick={signIn}>
             Login
           </Button>
         </div>
         {error && <p className="text-red-500">{error}</p>}
       </div>
-    </div>
+    </form>
   );
 };

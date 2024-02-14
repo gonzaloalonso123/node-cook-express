@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import "./App.css";
 import {
   AuthenticationProvider,
@@ -22,12 +22,21 @@ import { Settings } from "./pages/Settings";
 import { SettingsProvider } from "./providers/SettingsProvider";
 import { GithubSettings } from "./pages/GithubSettings";
 import { ToastContextProvider } from "./providers/ToastProvider";
+import { useEffect } from "react";
 
 const RouteMap = () => {
   const { user } = useAuthentication();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    } else {
+      navigate("/");
+    }
+  }, [user]);
   return (
     <Routes>
-      {!user && <Route path="/login" element={<Login />} />}
+      {!user && <Route index path="/login" element={<Login />} />}
       {user && <Route path="*" element={<PageWrapper />} />}
     </Routes>
   );
@@ -37,7 +46,7 @@ const PageWrapper = () => (
   <SettingsProvider>
     <Page>
       <Routes>
-        <Route index element={<Home />} />
+        <Route index path="/" element={<Home />} />
         <Route path="new-project" element={<NewProject />} />
         <Route path="project/:id/*" element={<ProjectWrapper />} />
         <Route path="settings/*" element={<SettingsWrapper />} />

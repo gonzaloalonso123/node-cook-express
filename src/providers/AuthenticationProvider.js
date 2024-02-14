@@ -28,9 +28,9 @@ export const AuthenticationProvider = ({ children }) => {
         if (user) {
           setUser(user);
           setError(null);
+          // navigate("/");
         } else {
           setError(null);
-          navigate("/login");
         }
       })
       .catch(() => {
@@ -45,6 +45,7 @@ export const AuthenticationProvider = ({ children }) => {
         const user = userCredential.user;
         setUser(user);
         setError(null);
+        navigate("/");
       })
       .catch((error) => {
         setError(error.message);
@@ -57,6 +58,7 @@ export const AuthenticationProvider = ({ children }) => {
         const user = userCredential.user;
         setUser(user);
         setError(null);
+        navigate("/")
       })
       .catch((error) => {
         setError(error.message);
