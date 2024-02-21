@@ -18,7 +18,7 @@ export const ProjectContextProvider = ({ children }) => {
   const [project, setProject] = useState(null);
   const { get, post, del, patch } = useApi();
   const { auth } = require("../firebase/index");
-  const { showToast } = useToast()
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (!auth.currentUser) return;
@@ -59,7 +59,7 @@ export const ProjectContextProvider = ({ children }) => {
     });
     setProject({ ...project, collections });
     showToast(toasts.collection_updated);
-  }
+  };
 
   const removeEndpoint = async (collectionId, endpointId) => {
     await del(
@@ -120,6 +120,11 @@ export const ProjectContextProvider = ({ children }) => {
     showToast(toasts.repository_unlinked);
   };
 
+  const updateProject = async (project, key, value) => {
+    await patch(`/projects/${id}`, { [key]: value });
+    setProject({ ...project, [key]: value });
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -131,7 +136,8 @@ export const ProjectContextProvider = ({ children }) => {
         removeRepository,
         removeCollection,
         removeEndpoint,
-        updateCollection
+        updateCollection,
+        updateProject,
       }}
     >
       {children}

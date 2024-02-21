@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useToast } from "../providers/ToastProvider";
 import toasts from "../content/toasts.json";
+import { filter } from "lodash";
 
 export const useNewEndpoint = () => {
   const [collection, setCollection] = useState(null);
@@ -10,6 +11,8 @@ export const useNewEndpoint = () => {
   const [requiresAuthentication, setRequiresAuthentication] = useState(false);
   const [requiresAuthorization, setRequiresAuthorization] = useState(false);
   const [authorizedBy, setAuthorizedBy] = useState("none");
+  const [pushTo, setPushTo] = useState("collection");
+  const [removeFrom, setRemoveFrom] = useState("collection");
   const [url, setUrl] = useState("");
   const [name, setName] = useState("");
   const { showToast } = useToast();
@@ -42,29 +45,48 @@ export const useNewEndpoint = () => {
 
   useEffect(() => {
     if (!collection) return;
-    setName(
-      `${method.charAt(0).toUpperCase() + method.slice(1).toLowerCase()} ${
-        filterBy == "all" ? "all" : ""
+    let name = `${
+      method.charAt(0).toUpperCase() + method.slice(1).toLowerCase()
+    }`;
+    if (method == "GET") {
+      name += filterBy == "all" ? " all" : "";
+    }
+    name += ` ${collection.name}`;
+    if (method == "POST") {
+      name += pushTo == "collection" ? "" : ` -> ${pushTo}`;
+    }
+    if (method == "DELETE") {
+      name += removeFrom == "collection" ? "" : ` -> ${removeFrom}`;
+    }
+    if (method == "GET") {
+      name += filterBy == "custom" ? ` by ${filterByCustom}` : "";
+    }
+    setName(name);
+    let url = "";
+    if (method == "GET") {
+      if (filterBy == "id") {
+        url = "/:id";
+      } else if (filterBy == "custom") {
+        url = `/by${filterByCustom}/:value`;
+      } else {
+        url = "/";
       }
-         ${collection.name} ${
-        filterBy == "custom"
-          ? `by ${filterByCustom}`
-          : filterBy == "id"
-          ? "by id"
-          : ""
-      }`
-    );
-    setUrl(
-      `${
-        filterBy == "id"
-          ? "/:id"
-          : filterBy == "custom"
-          ? `/by${filterByCustom}/:value`
-          : "/"
-      }`
-    );
+    } else if (method == "POST") {
+      url = pushTo != "collection" ? `/${pushTo}` : "/";
+    } else if (method == "DELETE") {
+      url = removeFrom != "collection" ? `/:id/${removeFrom}` : "/:id";
+    } else if (method == "PATCH") {
+      url = "/:id";
+    }
+    setUrl(url);
     console.log(collection);
-  }, [collection, method, filterBy, filterByCustom]);
+  }, [collection, method, filterBy, filterByCustom, pushTo, removeFrom]);
+
+  useEffect(() => {
+    if (filterBy == "custom") {
+      setFilterByCustom(collection.fields[1]?.name || "none");
+    }
+  }, [filterBy]);
 
   return {
     collection,
@@ -83,5 +105,9 @@ export const useNewEndpoint = () => {
     filterByCustom,
     setFilterByCustom,
     checkEndpointExists,
+    pushTo,
+    setPushTo,
+    removeFrom,
+    setRemoveFrom,
   };
 };

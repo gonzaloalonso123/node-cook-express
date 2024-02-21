@@ -40,6 +40,7 @@ const UserDropDown = ({ user }) => {
       {settingsOpen && (
         <Modal
           title="Settings"
+          inverted
           close={() => setSettingsOpen(false)}
           options={[
             {

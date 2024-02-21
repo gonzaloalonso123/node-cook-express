@@ -6,6 +6,7 @@ import { useNewEndpoint } from "../hooks/useNewEndpoint";
 import { useProjectContext } from "../providers/ProjectProvider";
 import { Toast } from "../components/toast/Toast";
 import { initialEndpointBundle } from "../content/initialEndpointBundle.js";
+import { NewEndpointForm } from "../components/NewEndpointForm.js";
 
 const methods = [
   { label: "GET", value: "GET", color: "bg-green-500" },
@@ -53,7 +54,9 @@ const EndpointCollection = ({ collection }) => {
         className="flex justify-between w-full items-center"
         onClick={() => setExpanded(!expanded)}
       >
-        <div className="text-lg font-bold">/{collection.name}</div>
+        <div className="text-lg font-bold">
+          /{collection.name.toLowerCase()}
+        </div>
         <ColorIcon
           color="black"
           className={`${
@@ -135,7 +138,9 @@ const EndpointItem = ({ item }) => {
           {item.method}
         </div>
 
-        <div className="text-sm bg-gray-400 p-1 rounded-md text-white font-bold w-fit">{item.url}</div>
+        <div className="text-sm bg-gray-400 p-1 rounded-md text-white font-bold w-fit">
+          {item.url}
+        </div>
       </div>
     </div>
   );
@@ -164,88 +169,3 @@ const AddEndpoint = ({ openDefault }) => {
     </div>
   );
 };
-
-const NewEndpointForm = ({ disable }) => {
-  const { project, addEndpoint } = useProjectContext();
-  const {
-    setCollection,
-    collection,
-    method,
-    setMethod,
-    setAuthorizedBy,
-    filterBy,
-    setFilterBy,
-    filterByCustom,
-    setFilterByCustom,
-    setRequiresAuthentication,
-    setRequiresAuthorization,
-    getEndpoint,
-    checkEndpointExists,
-  } = useNewEndpoint();
-
-  useEffect(() => {
-    setCollection(project.collections[0]);
-  }, [project.collections]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (checkEndpointExists()) return;
-    addEndpoint(collection.id, getEndpoint());
-    disable();
-  };
-
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-4 border-gray-100 "
-    >
-      <FormSelectField
-        label="Collection"
-        onChange={(value) => setCollection(value)}
-        options={project.collections.map((collection) => ({
-          label: collection.name,
-          value: collection,
-        }))}
-      />
-      <FormSelectField
-        label="Method"
-        onChange={(value) => setMethod(value)}
-        options={methods}
-      />
-      {method == "GET" && (
-        <FormSelectField
-          label="Filter by"
-          onChange={(value) => setFilterBy(value)}
-          options={[
-            { label: "None (get all)", value: "none" },
-            { label: "Id", value: "id" },
-            { label: "Custom value", value: "custom" },
-          ]}
-        />
-      )}
-      {method == "GET" && filterBy == "custom" && (
-        <FormInputField
-          label="Custom filter"
-          onChange={(e) => setFilterByCustom(e.target.value)}
-        />
-      )}
-      <div className="flex justify-end gap-4">
-        <Button type="submit">Save</Button>
-      </div>
-    </form>
-  );
-};
-
-const FormSelectField = ({ label, options, onChange }) => (
-  <div className="flex gap-4 w-full items-center">
-    <label className="w-1/2">{label}</label>
-    <Select options={options} onChange={onChange} color="black" />
-  </div>
-);
-
-const FormInputField = ({ label, onChange }) => (
-  <div className="flex gap-4 w-full items-center">
-    <label className="w-1/2">{label}</label>
-    <Input onChange={onChange} className="w-48" />
-  </div>
-);

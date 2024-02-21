@@ -144,16 +144,25 @@ const AddCollection = ({ openDefault }) => {
 const NewCollectionForm = ({ disable }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [fields, setFields] = useState([{ name: "id", type: "UUID" }]);
   const { addCollection, project } = useProjectContext();
+  const [fields, setFields] = useState([
+    {
+      name: "id",
+      type: project.prefered_database == "mongodb" ? "ObjectId" : "UUID",
+    },
+  ]);
   const { showToast } = useToast();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (checkSubmission()) return;
     if (checkCollectionExists()) return;
-    addCollection({ name, description, fields });
+    addCollection({ name: toPascalCase(name), description, fields });
     disable();
+  };
+
+  const toPascalCase = (text) => {
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   };
 
   const checkCollectionExists = () => {
@@ -264,7 +273,7 @@ const SchemaField = ({ field, modifyField, removeField }) => (
     <Input
       className="flex-1"
       value={field.name}
-      onChange={(e) => modifyField(e.target.value, "name")}
+      onChange={(e) => modifyField(e.target.value.toLowerCase(), "name")}
     />
     <Select
       options={newSchemaOptions}
@@ -280,13 +289,20 @@ const SchemaField = ({ field, modifyField, removeField }) => (
   </div>
 );
 
-const IdField = ({ edit }) => (
-  <div className="flex gap-4 w-full">
-    <Input className="flex-1" value="id" disabled />
-    <Input value="UUID" className="flex-1" disabled />
-    {edit && <div className="w-1/12"></div>}
-  </div>
-);
+const IdField = ({ edit }) => {
+  const { project } = useProjectContext();
+  return (
+    <div className="flex gap-4 w-full">
+      <Input className="flex-1" value="id" disabled />
+      <Input
+        value={project.prefered_database == "mongodb" ? "ObjectId" : "UUID"}
+        className="flex-1"
+        disabled
+      />
+      {edit && <div className="w-1/12"></div>}
+    </div>
+  );
+};
 
 const newSchemaOptions = [
   { label: "String", value: "String" },

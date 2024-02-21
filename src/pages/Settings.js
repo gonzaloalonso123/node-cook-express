@@ -13,7 +13,7 @@ const items = [
   {
     name: "Integrations",
     icon: "leak_add",
-    path: "github-settings",
+    path: "integration-settings",
   },
   {
     name: "Domains",

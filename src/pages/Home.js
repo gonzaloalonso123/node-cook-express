@@ -12,6 +12,7 @@ export const Home = () => {
       title="Home"
       subtitle="Select your node cook project"
       icon="home"
+      className="bg-white"
     >
       <LoadingOrChildren loading={!projects}>
         <ProjectList projects={projects} />

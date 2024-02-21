@@ -20,7 +20,7 @@ import { ProjectUsage } from "./pages/ProjectUsage";
 import { ProjectContextProvider } from "./providers/ProjectProvider";
 import { Settings } from "./pages/Settings";
 import { SettingsProvider } from "./providers/SettingsProvider";
-import { GithubSettings } from "./pages/GithubSettings";
+import { IntegrationSettings } from "./pages/IntegrationSettings";
 import { ToastContextProvider } from "./providers/ToastProvider";
 import { useEffect } from "react";
 
@@ -77,7 +77,7 @@ const SettingsWrapper = () => (
   <Settings>
     <Routes>
       <Route index element={<Settings />} />
-      <Route path="github-settings" element={<GithubSettings />} />
+      <Route path="integration-settings" element={<IntegrationSettings />} />
     </Routes>
   </Settings>
 );

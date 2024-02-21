@@ -9,10 +9,11 @@ export const Container = ({
   icon,
   headerType,
   headerChildren,
+  className,
 }) => {
   return (
     <div
-      className={`flex flex-col w-full border bg-gray-100 transition-all duration-100 h-full`}
+      className={`flex flex-col w-full border bg-gray-100 transition-all duration-100 h-full ${className}`}
     >
       <Header
         title={title}
@@ -21,9 +22,7 @@ export const Container = ({
         headerType={headerType}
         headerChildren={headerChildren}
       />
-      <div className="px-10 pb-28 overflow-auto flex-grow">
-        {children}
-      </div>
+      <div className="px-10 pb-28 overflow-auto flex-grow">{children}</div>
     </div>
   );
 };

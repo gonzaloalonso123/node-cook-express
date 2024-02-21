@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Input, WindowContainer } from "../components/Generics";
 import { useProjectContext } from "../providers/ProjectProvider";
 import { useAuthentication } from "../providers/AuthenticationProvider";
+import githubIcon from "../assets/images/github.png";
+import { Select } from "../components/Select/Select";
 
 export const ProjectGeneral = () => {
   const { project } = useProjectContext();
@@ -46,12 +48,8 @@ const EditableForm = ({ project }) => {
           onChange={(e) => setName(e.target.value)}
           disabled={!editable}
         />
-        <Input
-          label="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          disabled={!editable}
-        />
+        <GithubRepository project={project} />
+        <PreferedDatabase editable={editable} />
       </div>
       <div className="flex justify-end gap-4">
         {editable ? (
@@ -69,6 +67,44 @@ const EditableForm = ({ project }) => {
   );
 };
 
+const GithubRepository = ({ project }) => {
+  return (
+    <div className="flex items-center justify-between gap-4 px-4 py-1">
+      <img src={githubIcon} alt="github" className="h-8 w-8" />
+      <h1>
+        {project.github.enabled
+          ? "Repository : " + project.github.repository_name
+          : "No repository linked"}
+      </h1>
+    </div>
+  );
+};
+
+const PreferedDatabase = ({ editable }) => {
+  const { project, updateProject } = useProjectContext();
+  return (
+    <div className="flex items-center justify-between gap-4 px-4 py-1">
+      <h1>Prefered Database</h1>
+      {editable ? (
+        <div className="w-1/2">
+          <Select
+            options={[
+              { label: "MongoDB", value: "mongodb" },
+              { label: "Firebase", value: "firebase" },
+            ]}
+            onChange={(value) =>
+              updateProject(project, "prefered_database", value)
+            }
+            value={project.prefered_database || "mongodb"}
+          />
+        </div>
+      ) : (
+        <Input disabled value={project.prefered_database} />
+      )}
+    </div>
+  );
+};
+
 const ProjectInfo = ({ project }) => {
   const { user } = useAuthentication();
   return (
@@ -77,8 +113,14 @@ const ProjectInfo = ({ project }) => {
       <ProjectInfoField label="Owner" value={user.email} />
       <ProjectInfoField label="Description" value={project.description} />
       <ProjectInfoStatus label="Status" value={project.status} />
-      <ProjectInfoField label="Created" value={new Date(project.created).toLocaleString()} />
-      <ProjectInfoField label="Last updated" value={new Date(project.updated).toLocaleString()} />
+      <ProjectInfoField
+        label="Created"
+        value={new Date(project.created).toLocaleString()}
+      />
+      <ProjectInfoField
+        label="Last updated"
+        value={new Date(project.updated).toLocaleString()}
+      />
       <ProjectInfoField label="Collections" value={project.collections_count} />
       <ProjectInfoField label="Endpoints" value={project.endpoints_count} />
       <ProjectInfoField label="Node version" value={project.node_version} />

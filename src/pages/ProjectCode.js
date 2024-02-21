@@ -87,7 +87,7 @@ const LinkRepository = () => {
           <h1>{settings.github.username}</h1>
           <button
             className={`p-1 flex items-center justify-center bg-white rounded-md border-transparent border-2 hover:border-nc-orange transform transition-all`}
-            onClick={() => navigate("/settings/github-settings")}
+            onClick={() => navigate("/settings/integration-settings")}
           >
             <BoldIcon color="#FFBB64" className="text-sm">
               edit
@@ -131,7 +131,7 @@ const LinkToGithubSettings = () => {
       <p>Link your github profile to continue</p>
       <Button
         className="flex gap-6 w-fit"
-        onClick={() => navigate("/settings/github-settings")}
+        onClick={() => navigate("/settings/integration-settings")}
       >
         <ColorIcon color="#fff">settings</ColorIcon>My profiles
       </Button>
@@ -184,6 +184,7 @@ const GithubRepository = () => {
   const [codeSettings, setCodeSettings] = useState({
     indentation: "2",
     language: "javascript",
+    database: project.prefered_database || "mongodb",
     port: project.port || "6999",
     framework: "express",
     wipe: false,
@@ -236,6 +237,8 @@ const GithubRepositoryHeader = () => {
 
 const GithubRepositoryOptions = ({ setCodeSettings, codeSettings }) => {
   const { project } = useProjectContext();
+  const { settings } = useSettings();
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col gap-1 p-2">
       <Option title="Branch" value={project.github.branch} />
@@ -256,6 +259,36 @@ const GithubRepositoryOptions = ({ setCodeSettings, codeSettings }) => {
         }}
         options={[{ label: "express", value: "express" }]}
       />
+      <OptionSelect
+        title="Database"
+        onChange={(value) => {
+          setCodeSettings({ ...codeSettings, database: value });
+        }}
+        options={[
+          { label: "MongoDB", value: "mongodb" },
+          { label: "Firebase", value: "firebase" },
+        ]}
+        value={codeSettings.database}
+      />
+      {codeSettings.database === "firebase" &&
+        settings.firebase_profile.projects.length != 0 && (
+          <OptionSelect
+            title="Select your firebase project"
+            options={settings.firebase_profile.projects.map((project) => ({
+              label: project.name,
+              value: project.config,
+            }))}
+          />
+        )}
+      {codeSettings.database == "firebase" && (
+        <Button
+          className="w-1/2 self-end my-3"
+          onClick={() => navigate("/settings/integration-settings")}
+        >
+          <Icon>add</Icon>
+          Add firebase project
+        </Button>
+      )}
       <OptionSelect
         title="Indentation"
         onChange={(value) => {
@@ -369,8 +402,12 @@ const Info = () => (
 const RunMyDb = () => {
   const { project } = useProjectContext();
   const { settings } = useSettings();
-  const repository_name = project.github ? project.github.repository_name : "your-repo";
-  const user_name = settings.github ? settings.github.username : "your-username";
+  const repository_name = project.github
+    ? project.github.repository_name
+    : "your-repo";
+  const user_name = settings.github
+    ? settings.github.username
+    : "your-username";
   const projectUrl = `https://github.com/${user_name}/${repository_name}`;
   return (
     <div className="p-2">
@@ -393,7 +430,7 @@ const RunMyDb = () => {
   );
 };
 
-const CopyableCodeSnippet = ({ code }) => {
+export const CopyableCodeSnippet = ({ code }) => {
   const [copied, setCopied] = useState(false);
   return (
     <div className="flex flex-col gap-2 py-4">

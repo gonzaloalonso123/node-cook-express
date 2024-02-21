@@ -10,13 +10,204 @@ import {
 import { useSettings } from "../providers/SettingsProvider";
 import GithubIcon from "../assets/images/github.png";
 import { BoldIcon, Icon } from "../components/icons/Icon";
+import { CopyableCodeSnippet } from "./ProjectCode";
 
-export const GithubSettings = () => (
+export const IntegrationSettings = () => (
   <WindowContainer>
-    <h1 className="text-2xl font-bold">Github Settings</h1>
-    <p>Manage your Github account</p>
-    <MyProfile />
+    <div className="flex flex-col gap-10">
+      <GithubSettings />
+      <FirebaseSettings />
+    </div>
   </WindowContainer>
+);
+
+const GithubSettings = () => {
+  return (
+    <div className="flex flex-col gap-4">
+      <h1 className="text-2xl font-bold">Github Settings</h1>
+      <p>Manage your Github account</p>
+      <MyProfile />
+    </div>
+  );
+};
+
+const FirebaseSettings = () => {
+  return (
+    <div className="flex flex-col gap-4 w-1/2">
+      <h1 className="text-2xl font-bold">Firebase Settings</h1>
+      <p>Manage your Firebase projects</p>
+      <FirebaseProjectSettings />
+    </div>
+  );
+};
+
+const FirebaseProjectSettings = () => {
+  const { settings, updateSettings } = useSettings();
+  const [showAddProject, setShowAddProject] = useState(false);
+  useEffect(() => console.log(settings), []);
+  return (
+    <div className="flex flex-col gap-4">
+      {settings.firebase_profile.projects.map((project) => (
+        <FirebaseProject project={project} />
+      ))}
+      <Button onClick={() => setShowAddProject(true)}>
+        Add firebase project
+      </Button>
+      {showAddProject && (
+        <AddFirebaseProject close={() => setShowAddProject(false)} />
+      )}
+    </div>
+  );
+};
+
+const AddFirebaseProject = ({ close }) => {
+  const { updateSettings, settings } = useSettings();
+  const [name, setName] = useState("");
+  const [config, setConfig] = useState("");
+  const add = () => {
+    const currentProjects = settings.firebase_profile.projects;
+    const isServiceAcc = config.includes("type");
+    currentProjects.push({
+      name,
+      config,
+      service_account: isServiceAcc,
+    });
+    updateSettings("firebase_profile", {
+      ...settings.firebase_profile,
+      projects: currentProjects,
+    });
+    close();
+  };
+  return (
+    <Popup close={close}>
+      <div className="flex gap-4 max-w-2xl">
+        <div className="flex flex-col justify-between">
+          <div className="flex flex-col gap-4">
+            <h1 className="font-bold">Add a new firebase project</h1>
+            <div className="flex gap-4 w-full items-center">
+              <label className="w-1/2">Name</label>
+              <UnstyledInput
+                className="w-4/5"
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-4 w-full items-center">
+              <label className="w-1/2">Project config</label>
+              <UnstyledInput
+                className="w-4/5"
+                onChange={(e) => setConfig(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
+            <Button secondary onClick={close}>
+              Cancel
+            </Button>
+            <Button create onClick={add}>
+              Add
+            </Button>
+          </div>
+        </div>
+        <FirebaseProjectInfo />
+      </div>
+    </Popup>
+  );
+};
+
+const FirebaseProjectInfo = () => {
+  return (
+    <div className="bg-nc-yellow rounded-md p-2 mt-6 gap-4 w-1/2">
+      <p>Create a firebase project at </p>
+      <CopyableCodeSnippet code=" https://console.firebase.google.com/" />
+
+      <p>
+        Once you have a new project, you can add it to node cook by pasting the
+        service account configuration file here. You can get one at
+      </p>
+      <CopyableCodeSnippet code="https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk" />
+    </div>
+  );
+};
+
+const FirebaseProject = ({ project }) => {
+  const [showConfig, setShowConfig] = useState(false);
+  const [showDeleteProject, setShowDeleteProject] = useState(false);
+  const { settings, updateSettings } = useSettings();
+
+  const deleteProject = () => {
+    const currentProjects = settings.firebase_profile.projects;
+    const newProjects = currentProjects.filter((p) => p.name !== project.name);
+    updateSettings("firebase_profile", {
+      ...settings.firebase_profile,
+      projects: newProjects,
+    });
+  };
+
+  useEffect(() => {
+    console.log(project.config);
+    console.log(JSON.parse(project.config));
+  }, []);
+  return (
+    <div className="p-2 border rounded-md flex flex-col">
+      <div
+        className="flex items-ceter justify-between cursor-pointer"
+        onClick={() => setShowConfig(!showConfig)}
+      >
+        {project.name}
+        <Icon>keyboard_arrow_down</Icon>
+      </div>
+      {showConfig && (
+        <ProjectExtended
+          setShowDeleteProject={setShowDeleteProject}
+          deleteProject={deleteProject}
+          showDeleteProject={showDeleteProject}
+          project={project}
+        />
+      )}
+    </div>
+  );
+};
+
+const ProjectExtended = ({
+  setShowDeleteProject,
+  deleteProject,
+  showDeleteProject,
+  project,
+}) => (
+  <>
+    <pre className="m-4 bg-gray-100 rounded-md p-2 justify-between overflow-scroll text-xs">
+      {JSON.stringify(
+        {
+          ...JSON.parse(project.config),
+          private_key: "hidden_key",
+        },
+        null,
+        2
+      )}
+    </pre>
+    <div className="flex justify-between p-4">
+      {project.service_account ? (
+        <p className="flex items-center gap-2">
+          <Icon>key</Icon>Service account
+        </p>
+      ) : (
+        <div />
+      )}
+      <DangerButton
+        className="w-fitself-end"
+        onClick={() => setShowDeleteProject(true)}
+      >
+        <Icon>delete</Icon>Delete project
+      </DangerButton>
+    </div>
+    {showDeleteProject && (
+      <DeletePopup
+        close={() => setShowDeleteProject(false)}
+        del={deleteProject}
+        message="Are you sure you want to delete this project?"
+      />
+    )}
+  </>
 );
 
 const MyProfile = () => {
@@ -61,45 +252,34 @@ const Profile = () => {
           <img src={GithubIcon} className="h-6 w-6" />
           {settings.github.username}
         </div>
-        <DeleteProfileButton onClick={() => setShowDeleteProfile(true)} />
+        <DangerButton onClick={() => setShowDeleteProfile(true)}>
+          <Icon>delete</Icon>Delete profile
+        </DangerButton>
       </div>
       <Token profile={settings.github} />
       {showDeleteProfile && (
-        <DeleteProfilePopup
+        <DeletePopup
           close={() => setShowDeleteProfile(false)}
-          deleteProfile={deleteProfile}
+          delete={deleteProfile}
+          message="Deleting your github profile will remove your access token from our
+          system. Do you wish to continue?"
         />
       )}
     </div>
   );
 };
 
-const DeleteProfileButton = ({ onClick }) => (
-  <button
-    className="px-3 flex text-sm text-white justify-center bg-nc-red rounded-md hover:brightness-75 transform transition-all items-center gap-2"
-    onClick={onClick}
-  >
-    <BoldIcon color="#fff" fontSize="15px">
-      delete
-    </BoldIcon>
-    Delete profile
-  </button>
-);
-
-const DeleteProfilePopup = ({ close, deleteProfile }) => (
+const DeletePopup = ({ close, del, message }) => (
   <Popup close={close}>
     <div className="flex flex-col gap-4 max-w-96">
-      <h1 className="font-bold">
-        Deleting your github profile will remove your access token from our
-        system. Do you wish to continue?
-      </h1>
+      <h1 className="font-bold">{message}</h1>
       <div className="flex w-full justify-between">
         <Button secondary onClick={close}>
           Cancel
         </Button>
         <DangerButton
           onClick={() => {
-            deleteProfile();
+            del();
             close();
           }}
         >
@@ -210,7 +390,9 @@ const NewProfileForm = ({ close }) => {
         onChange={(e) => setAccessToken(e.target.value)}
       />
       <div className="flex justify-end gap-4 mt-6">
-        <Button type="button" secondary>Cancel</Button>
+        <Button type="button" secondary>
+          Cancel
+        </Button>
         <Button onClick={submit}>Save</Button>
       </div>
       <GithubProfileInformation />

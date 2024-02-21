@@ -15,7 +15,7 @@ const buttonCreate =
   "bg-nc-green border-nc-green text-white font-bold hover:bg-nc-dark-green";
 const checkboxStyle = "border-2 border-nc-orange rounded-md p-2";
 const dangerButtonPrimary =
-  "bg-nc-red border-nc-red text-white font-bold hover:bg-nc-dark-red";
+  "bg-nc-red border-nc-red text-white hover:bg-nc-dark-red";
 const dangerButtonSecondary =
   "bg-white text-nc-red border-nc-red hover:bg-gray-100";
 
@@ -90,9 +90,9 @@ export const Modal = ({
   return (
     <div
       ref={ref}
-      className={`absolute bg-white w-48 flex top-8 left-8 flex-col border border-gray-200 ${
+      className={`absolute bg-white w-48 flex flex-col border border-gray-200 ${
         little ? "p-1" : "py-2"
-      } rounded-md shadow-md ${inverted ? "-translate-x-48" : ""}`}
+      } rounded-md shadow-md ${inverted ? "right-4" : ""}`}
     >
       <div className="flex w-full justify-between px-4 items-center">
         <h1 className={`${little ? "" : "text-xl"} font-bold`}>{title}</h1>
