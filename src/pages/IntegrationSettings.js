@@ -260,7 +260,7 @@ const Profile = () => {
       {showDeleteProfile && (
         <DeletePopup
           close={() => setShowDeleteProfile(false)}
-          delete={deleteProfile}
+          del={deleteProfile}
           message="Deleting your github profile will remove your access token from our
           system. Do you wish to continue?"
         />

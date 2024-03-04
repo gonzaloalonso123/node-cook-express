@@ -31,24 +31,27 @@ const items = [
     path: "api-doc",
   },
   {
-    name: "Deployment",
-    icon: "deployed_code",
-    path: "deployment",
-    disabled: true,
-  },
-  {
     name: "Database",
     icon: "database",
     path: "database",
     disabled: true,
   },
-
   {
     name: "Usage",
     icon: "query_stats",
     path: "usage",
     disabled: true,
   },
+];
+
+const firebaseItems = [
+  ...items.slice(0, 3),
+  {
+    name: "Users",
+    icon: "person",
+    path: "users",
+  },
+  ...items.slice(3),
 ];
 
 export const Project = ({ children }) => {
@@ -59,7 +62,17 @@ export const Project = ({ children }) => {
       subtitle="Admin"
       icon="folder"
       headerType="static"
-      headerChildren={<HeaderMenu items={items} />}
+      headerChildren={
+        <HeaderMenu
+          items={
+            project
+              ? project.prefered_database == "mongodb"
+                ? items
+                : firebaseItems
+              : []
+          }
+        />
+      }
     >
       <div className="pt-10">
         <LoadingOrChildren loading={!project}>{children}</LoadingOrChildren>

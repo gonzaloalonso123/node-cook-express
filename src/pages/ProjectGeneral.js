@@ -48,7 +48,6 @@ const EditableForm = ({ project }) => {
           onChange={(e) => setName(e.target.value)}
           disabled={!editable}
         />
-        <GithubRepository project={project} />
         <PreferedDatabase editable={editable} />
       </div>
       <div className="flex justify-end gap-4">

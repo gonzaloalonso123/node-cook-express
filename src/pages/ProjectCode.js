@@ -26,7 +26,18 @@ const GithubIntegration = () => {
   const { project } = useProjectContext();
   return (
     <div className="flex flex-col gap-2 w-1/2">
-      <h1 className="text-2xl font-bold mb-4">Code</h1>
+      <div className="flex justify-between w-full items-center">
+        <h1 className="text-2xl font-bold mb-4">Code</h1>
+        <div className="w-1/4">
+          <Select
+            fit
+            options={[
+              { label: "api", value: "api" },
+              { label: "client", value: "client" },
+            ]}
+          />
+        </div>
+      </div>
       <p>Generate code and push it to your github repository</p>
       {project.github.enabled ? <GithubRepository /> : <AddRepository />}
     </div>
@@ -299,13 +310,15 @@ const GithubRepositoryOptions = ({ setCodeSettings, codeSettings }) => {
           { label: "4 spaces", value: 4 },
         ]}
       />
-      <Option
-        title="Port"
-        onChange={(e) => {
-          setCodeSettings({ ...codeSettings, port: e.target.value });
-        }}
-        value={codeSettings.port}
-      />
+      {codeSettings.database == "mongodb" && (
+        <Option
+          title="Port"
+          onChange={(e) => {
+            setCodeSettings({ ...codeSettings, port: e.target.value });
+          }}
+          value={codeSettings.port}
+        />
+      )}
       <OptionSelect
         title="Wipe previous repository data"
         onChange={(value) => {
@@ -357,33 +370,40 @@ const GithubRepositoryButton = ({ onClick, children, loading }) => (
 const GithubCodeInformation = () => {
   const [moreInfoExpanded, setMoreInfoExpanded] = useState(false);
   const { settings } = useSettings();
+  const { project } = useProjectContext();
   return (
     <div className="flex flex-col w-1/2">
       <h1 className="text-2xl font-bold mb-4">Usage</h1>
       <div className="bg-nc-yellow rounded-md p-2 mt-6 h-fit">
-        <Info />
-        <div
-          className="cursor-pointer flex gap-3 w-fit mx-auto mt-6 items-center"
-          onClick={() => setMoreInfoExpanded(!moreInfoExpanded)}
-        >
-          <Icon
-            className={`
+        {project.prefered_database === "mongodb" ? (
+          <InfoMongo />
+        ) : (
+          <RunMyDbFirebase />
+        )}
+        {project.prefered_database === "mongodb" && (
+          <div
+            className="cursor-pointer flex gap-3 w-fit mx-auto mt-6 items-center"
+            onClick={() => setMoreInfoExpanded(!moreInfoExpanded)}
+          >
+            <Icon
+              className={`
             ${moreInfoExpanded ? "transform rotate-180" : ""}
           `}
-          >
-            keyboard_arrow_down
-          </Icon>
-          <label className="underline text-sm cursor-pointer">
-            How to run my backend?
-          </label>
-        </div>
-        {moreInfoExpanded && <RunMyDb />}
+            >
+              keyboard_arrow_down
+            </Icon>
+            <label className="underline text-sm cursor-pointer">
+              How to run my backend?
+            </label>
+          </div>
+        )}
+        {moreInfoExpanded && <RunMyDbMongo />}
       </div>
     </div>
   );
 };
 
-const Info = () => (
+const InfoMongo = () => (
   <div className="flex flex-col">
     <div className="flex items-center">
       <div className="p-4">
@@ -399,7 +419,7 @@ const Info = () => (
   </div>
 );
 
-const RunMyDb = () => {
+const RunMyDbMongo = () => {
   const { project } = useProjectContext();
   const { settings } = useSettings();
   const repository_name = project.github
@@ -435,16 +455,114 @@ export const CopyableCodeSnippet = ({ code }) => {
   return (
     <div className="flex flex-col gap-2 py-4">
       <div className="flex gap-2 items-center">
-        <Input value={code} readOnly />
+        <Input value={code} readOnly className="w-full" />
         <Button
           onClick={() => {
             navigator.clipboard.writeText(code);
             setCopied(true);
           }}
         >
-          {copied ? "Copied!" : "Copy"}
+          {copied ? (
+            <ColorIcon color="white">check</ColorIcon>
+          ) : (
+            <ColorIcon color="white">content_copy</ColorIcon>
+          )}
         </Button>
       </div>
+    </div>
+  );
+};
+
+const InfoFirebase = () => (
+  <div className="flex flex-col">
+    <div className="flex items-center">
+      <div className="p-4">
+        <Icon>question_mark</Icon>
+      </div>
+      <p className="p-2">
+        Ready to deploy your changes? Submit your updates to upload a fresh
+        backend to your repository. Your package includes an Express server, a
+        database connection, and a set of pre-configured endpoints to jumpstart
+        your project.
+      </p>
+    </div>
+  </div>
+);
+
+const RunMyDbFirebase = () => {
+  const { project } = useProjectContext();
+  const { settings } = useSettings();
+  const repository_name = project.github
+    ? project.github.repository_name
+    : "your-repo";
+  const user_name = settings.github
+    ? settings.github.username
+    : "your-username";
+  const projectUrl = `https://github.com/${user_name}/${repository_name}`;
+  return (
+    <div className="p-2">
+      <p className="py-4">
+        <h1 className="font-bold text-xl my-2">Set up firebase API</h1>
+        Lets get your API up and running. First you need to have a working
+        project in firebase and have enabled the following services:
+        <ul className="my-4">
+          <li className="flex gap-4 items center">
+            <Icon>check</Icon>Firestore Database
+          </li>
+          <li className="flex gap-4 items center">
+            <Icon>check</Icon>Functions
+          </li>
+          <li className="flex gap-4 items center">
+            <Icon>check</Icon>Authentication
+          </li>
+        </ul>
+        <h1 className="font-bold bg-gray-100 p-2 my-2">
+          Before you begin cooking with nodecook, this is the recommended setup:
+        </h1>
+        <h1 className="font-bold">
+          1. Create an empty github repository and clone it into your local
+          machine:
+        </h1>
+        <CopyableCodeSnippet code={`git clone ${projectUrl}`} />
+        <h1 className="font-bold">2. Navigate to the root of your directory</h1>
+        <CopyableCodeSnippet code={`cd ${repository_name}`} />
+        <h1 className="font-bold">
+          3. Type the following commands in the terminal
+        </h1>
+        <CopyableCodeSnippet code="firebase login" />
+        Log into your google account through the browser
+        <CopyableCodeSnippet code="firebase init" />
+        <h1 className="font-bold my-1">
+          4. Select your project, and enable functions
+        </h1>
+        <h1 className="font-bold my-1">5. Push your repository</h1>
+        <h1 className="font-bold gap-2 flex items-center my-1">
+          6. Press{" "}
+          <div className="bg-nc-green p-1 rounded-md w-fit h-fit text-white whitespace-nowrap font-sm">
+            Cook backend
+          </div>{" "}
+          button to generate your API
+        </h1>
+        <h1 className="font-bold my-1">
+          7. Clone Your Repository to Your Local Machine:
+        </h1>
+        <CopyableCodeSnippet code={`git clone ${projectUrl}`} />
+        <h1 className="font-bold">8. navigate to the root of your directory</h1>
+        <CopyableCodeSnippet code={`cd ${repository_name}`} />
+        <h1 className="font-bold">
+          9. Create a folder named .firebase and copy your admin configuration
+          into a file named service_account.json:
+        </h1>
+        <CopyableCodeSnippet
+          code={`mkdir .firebase && touch .firebase/service_account.json`}
+        />
+        Find your admin configuration at
+        <CopyableCodeSnippet code="https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk" />
+        <h1 className="font-bold">10. Add this snippet to your .env file:</h1>
+        <CopyableCodeSnippet code="GOOGLE_APPLICATION_CREDENTIALS=.firebase/service_account.json" />
+        Explore deployment options in the{" "}
+        <Link to="deployment">Deployment</Link> tab.
+      </p>
     </div>
   );
 };
